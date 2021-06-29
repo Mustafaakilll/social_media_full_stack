@@ -1,72 +1,110 @@
 const userModel = require("./../model/user_model");
-// TODO: CREATE MODEL FOR RESPONSE AND ERROR
-const knex = require("knex")({
-  client: "mysql2",
-  connection: {
-    host: process.env.DB_URL,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-  },
-  migrations: {
-    tableName: process.env.DB_USER_TABLE,
-  },
+const postModel = require("./../model/post_model");
+const asyncHandler = require("./../middleware/async_handler");
+
+exports.getUsers = asyncHandler(async (req, res, _) => {
+  let users = await userModel.find().select("-password").lean().exec();
+
+  users.forEach((user) => {
+    user.isFollowing = false;
+    const followers = user.followers.map((follower) => follower._id.toString());
+    if (followers.includes(req.user.id)) {
+      user.isFollowing = true;
+    }
+  });
+
+  users = users.filter((user) => user._id.toString() !== req.user.id);
+
+  res.status(200).json({ isSuccess: true, data: users });
 });
 
-module.exports = {
-  getAllUser: async (res) => {
-    try {
-      const users = [];
-      const _user = await knex("user").select();
-      _user.map((user) => {
-        users.push(new userModel(user));
-      });
-      res.json(users);
-    } catch (e) {
-      console.log(e);
-      res.status(400).json(e);
+exports.getUser = asyncHandler(async (req, res, next) => {
+  const user = await userModel
+    .findOne({ username: req.params.username })
+    .select("-password")
+    .populate({ path: "posts", select: "files commentsCount likesCount" })
+    .populate({ path: "followers", select: "avatar username" })
+    .populate({ path: "following", select: "avatar username" })
+    .lean()
+    .exec();
+
+  if (!user) {
+    return next({
+      message: `There is no account for this username: ${req.params.username}`,
+      statusCode: 404,
+    });
+  }
+
+  user.isFollowing = false;
+  const followers = user.followers.map((follower) => follower._id.toString());
+
+  user.followers.forEach((follower) => {
+    follower.isFollowing = false;
+    if (req.user.following.includes(follower._id.toString())) {
+      user.isFollowing = true;
     }
-  },
-  getUserById: async (req, res) => {
-    try {
-      let user;
-      const userId = req.params.userId;
-      const _user = await knex("user").select().where("user_id", userId);
-      _user.map((u) => {
-        user = new userModel(u);
-      });
-      res.json(user);
-    } catch (e) {
-      res.status(400).json(e);
+  });
+
+  user.followers.forEach((user) => {
+    user.isFollowing = false;
+    if (req.user.followers.includes(user._id.toString())) {
+      user.isFollowing = true;
     }
-  },
-  createUser: async (req, res) => {
-    //TODO: ADD USER TO AWS COGNITO SAME TIME
-    try {
-      const _user = await knex("user").insert(req.body);
-      res.json(_user);
-    } catch (e) {
-      res.status(400).json(e);
+  });
+
+  if (followers.includes(req.user.id)) {
+    user.isFollowing = true;
+  }
+
+  user.isMe = req.user.id === user._id.toString();
+
+  res.status(200).json({
+    isSuccess: true,
+    data: user,
+  });
+});
+
+exports.feed = asyncHandler(async (req, res, _) => {
+  const following = req.user.following;
+  const users = await userModel.find().where("_id").in(following).exec();
+
+  const postIds = users.map((user) => user.posts).flat();
+  const posts = await postModel
+    .find()
+    .populate({
+      path: "comments",
+      select: "text",
+      populate: {
+        path: "user",
+        select: "username avatar",
+      },
+    })
+    .populate({ path: "user", select: "avatar username" })
+    .sort("-createdAt")
+    .where("_id")
+    .in(postIds)
+    .lean()
+    .exec();
+
+  posts.forEach((post) => {
+    post.isLiked = false;
+    const likes = post.likes.map((like) => like.toString());
+    if (likes.includes(req.user.id)) {
+      post.isLiked = true;
     }
-  },
-  updateUser: async (req, res) => {
-    try {
-      const userId = req.params.userId;
-      const _user = await knex("user")
-        .where("user_id", userId)
-        .update(req.body);
-      res.json(_user + " Satir guncellendi.");
-    } catch (e) {
-      res.status(400).json(e);
+
+    post.isMine = false;
+    if (post.user._id.toString() === req.user.id) {
+      post.isMine = true;
     }
-  },
-  deleteUser: async (req, res) => {
-    try {
-      const userId = req.params.userId;
-      const _user = await knex("user").where("user_id", userId).delete();
-      res.json(_user + " Satir silindi.");
-    } catch (e) {
-      res.status(400).json(e);
-    }
-  },
-};
+
+    post.comments.map((comment) => {
+      comment.isMine = false;
+      if (comment.user._id.toString() === req.user.id) {
+        comment.isMine = true;
+      }
+    });
+  });
+
+  res.status(200).json({ isSuccess: true, data: posts });
+});
