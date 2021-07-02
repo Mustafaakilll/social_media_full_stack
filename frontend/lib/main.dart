@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'auth/sign_up_bloc/sign_up_view.dart';
+import 'auth/log_in_bloc/log_in_view.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: SignUpView(),
+      home: LogInView(),
     );
   }
 }
