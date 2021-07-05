@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'auth/log_in_bloc/log_in_view.dart';
+import 'auth/auth_repository.dart';
+import 'auth/navigator/auth_navigator.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,9 +11,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      home: LogInView(),
+    return RepositoryProvider(
+      create: (context) => AuthRepository(),
+      child: const MaterialApp(
+        title: 'Flutter Demo',
+        home: AuthNavigator(),
+      ),
     );
   }
 }

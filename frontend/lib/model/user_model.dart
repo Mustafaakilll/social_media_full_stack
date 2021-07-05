@@ -4,8 +4,8 @@ part 'user_model.g.dart';
 
 @JsonSerializable()
 class UserModel {
-  UserModel({
-    required this.id,
+  const UserModel({
+    this.id,
     required this.username,
     required this.email,
     required this.avatar,
@@ -20,7 +20,7 @@ class UserModel {
   });
 
   @JsonKey(name: '_id')
-  final String id;
+  final String? id;
   final String username;
   final String email;
   final String password;

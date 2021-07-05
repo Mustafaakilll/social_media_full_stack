@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../auth_repository.dart';
+import '../form_status.dart';
+import '../navigator/auth_navigator_cubit.dart';
 import 'log_in_bloc.dart';
 
 class LogInView extends StatelessWidget {
   LogInView({Key? key}) : super(key: key);
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LogInBloc(),
+      create: (context) => LogInBloc(context.read<AuthRepository>()),
       child: Scaffold(
         appBar: _appBar(),
         body: Padding(
@@ -20,7 +21,7 @@ class LogInView extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             children: [
               _loginForm(),
-              _signUpButton(),
+              _signUpButton(context),
             ],
           ),
         ),
@@ -36,8 +37,13 @@ class LogInView extends StatelessWidget {
   }
 
   Widget _loginForm() {
-    return Form(
-      key: _formKey,
+    return BlocListener<LogInBloc, LogInState>(
+      listener: (context, state) {
+        final formStatus = state.formStatus;
+        if (formStatus is SubmissionFailure) {
+          _showSnackBar(context, formStatus.exception.toString());
+        }
+      },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -53,10 +59,8 @@ class LogInView extends StatelessWidget {
     return BlocBuilder<LogInBloc, LogInState>(
       builder: (context, state) {
         return TextFormField(
-          decoration: const InputDecoration(
-            icon: Icon(Icons.email),
-            hintText: 'Email',
-          ),
+          decoration: const InputDecoration(icon: Icon(Icons.email), hintText: 'Email'),
+          validator: (value) => state.isValidEmail ? null : 'Please check your email',
           onChanged: (value) => context.read<LogInBloc>().add(EmailChanged(value)),
         );
       },
@@ -67,6 +71,7 @@ class LogInView extends StatelessWidget {
     return BlocBuilder<LogInBloc, LogInState>(
       builder: (context, state) {
         return TextFormField(
+          obscureText: true,
           decoration: const InputDecoration(icon: Icon(Icons.security), hintText: 'Password'),
           onChanged: (v) => context.read<LogInBloc>().add(PasswordChanged(v)),
         );
@@ -85,7 +90,16 @@ class LogInView extends StatelessWidget {
     );
   }
 
-  Widget _signUpButton() {
-    return TextButton(onPressed: () {}, child: const Text('Don"t you have account, press here to sign Up'));
+  Widget _signUpButton(BuildContext context) {
+    return TextButton(
+        onPressed: () {
+          context.read<AuthNavigatorCubit>().showSignUp();
+        },
+        child: const Text('Don"t you have account, press here to sign Up'));
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    final _snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
   }
 }

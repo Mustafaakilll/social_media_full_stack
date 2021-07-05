@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../auth_repository.dart';
 import '../form_status.dart';
 
 part 'log_in_event.dart';
 part 'log_in_state.dart';
 
 class LogInBloc extends Bloc<LogInEvent, LogInState> {
-  LogInBloc() : super(LogInState());
+  LogInBloc(this.authRepo) : super(const LogInState());
+
+  final AuthRepository authRepo;
 
   @override
   Stream<LogInState> mapEventToState(LogInEvent event) async* {
@@ -18,8 +21,9 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
     } else if (event is PasswordChanged) {
       yield state.copyWith(password: event.password);
     } else if (event is LogInSubmitted) {
-      //TODO: ADD LOGIC CODE
       try {
+        final token = await authRepo.logIn(state.email, state.password);
+        //TODO: ADD SHARED PREFERENCES FOR STORE TOKEN
         yield state.copyWith(formStatus: const SubmissionSuccess());
       } on Exception catch (e) {
         yield state.copyWith(formStatus: SubmissionFailure(e));

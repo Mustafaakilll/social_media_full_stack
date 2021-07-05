@@ -27,7 +27,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
   const token = user.getJwtToken();
 
-  res.status(200).json({ success: true, token });
+  res.status(200).json({ isSuccess: true, token });
 });
 
 exports.signup = asyncHandler(async (req, res, _) => {
@@ -37,14 +37,14 @@ exports.signup = asyncHandler(async (req, res, _) => {
 
   const token = user.getJwtToken();
 
-  res.status(200).json({ success: true, token });
+  res.status(200).json({ isSuccess: true, token });
 });
 
 exports.me = asyncHandler(async (req, res, _) => {
   const { avatar, username, email, _id, website, bio } = req.user;
 
   res.status(200).json({
-    success: true,
+    isSuccess: true,
     data: { avatar, username, email, _id, website, bio },
   });
 });

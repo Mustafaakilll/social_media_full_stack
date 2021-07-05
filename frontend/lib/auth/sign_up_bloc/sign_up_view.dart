@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../auth_repository.dart';
+import '../form_status.dart';
+import '../navigator/auth_navigator_cubit.dart';
 import 'sign_up_bloc.dart';
 
-//TODO: ADD VALIDATOR
 class SignUpView extends StatelessWidget {
   SignUpView({Key? key}) : super(key: key);
 
@@ -12,7 +14,7 @@ class SignUpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SignUpBloc(),
+      create: (context) => SignUpBloc(context.read<AuthRepository>()),
       child: Scaffold(
         appBar: _appBar(),
         body: Padding(
@@ -21,7 +23,7 @@ class SignUpView extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             children: [
               _signUpForm(),
-              _logInButton(),
+              _logInButton(context),
             ],
           ),
         ),
@@ -37,16 +39,24 @@ class SignUpView extends StatelessWidget {
   }
 
   Widget _signUpForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _usernameField(),
-          _emailField(),
-          _passwordField(),
-          _submitButton(),
-        ],
+    return BlocListener<SignUpBloc, SignUpState>(
+      listener: (context, state) {
+        final formStatus = state.formStatus;
+        if (formStatus is SubmissionFailure) {
+          _showSnackBar(context, formStatus.exception.toString());
+        }
+      },
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _usernameField(),
+            _emailField(),
+            _passwordField(),
+            _submitButton(),
+          ],
+        ),
       ),
     );
   }
@@ -55,10 +65,8 @@ class SignUpView extends StatelessWidget {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return TextFormField(
-          decoration: const InputDecoration(
-            hintText: 'Username',
-            icon: Icon(Icons.person),
-          ),
+          decoration: const InputDecoration(hintText: 'Username', icon: Icon(Icons.person)),
+          validator: (value) => state.isValidUsername ? null : 'Your username has to be longer than 6 characters',
           onChanged: (value) => context.read<SignUpBloc>().add(UsernameChanged(value)),
         );
       },
@@ -69,10 +77,8 @@ class SignUpView extends StatelessWidget {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return TextFormField(
-          decoration: const InputDecoration(
-            hintText: 'Email',
-            icon: Icon(Icons.email),
-          ),
+          decoration: const InputDecoration(hintText: 'Email', icon: Icon(Icons.email)),
+          validator: (value) => state.isValidEmail ? null : 'Please enter valid email',
           onChanged: (value) => context.read<SignUpBloc>().add(EmailChanged(value)),
         );
       },
@@ -83,10 +89,9 @@ class SignUpView extends StatelessWidget {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return TextFormField(
-          decoration: const InputDecoration(
-            hintText: 'Password',
-            icon: Icon(Icons.security),
-          ),
+          decoration: const InputDecoration(hintText: 'Password', icon: Icon(Icons.security)),
+          obscureText: true,
+          validator: (value) => state.isValidPassword ? null : 'Your password has to be longer than 6 characters',
           onChanged: (value) => context.read<SignUpBloc>().add(PasswordChanged(value)),
         );
       },
@@ -104,7 +109,15 @@ class SignUpView extends StatelessWidget {
     );
   }
 
-  Widget _logInButton() {
-    return TextButton(onPressed: () {}, child: const Text('Press here for login'));
+  Widget _logInButton(BuildContext context) {
+    return TextButton(
+      onPressed: () => context.read<AuthNavigatorCubit>().showLogin(),
+      child: const Text('Press here for login'),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    final _snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
   }
 }

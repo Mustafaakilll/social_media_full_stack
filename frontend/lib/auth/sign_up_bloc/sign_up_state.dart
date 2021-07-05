@@ -13,6 +13,10 @@ class SignUpState extends Equatable {
   final String password;
   final FormSubmissionState formStatus;
 
+  bool get isValidUsername => username.length > 6;
+  bool get isValidEmail => re.hasMatch(email);
+  bool get isValidPassword => password.length > 8;
+
   SignUpState copyWith({
     String? email,
     String? username,
@@ -26,6 +30,8 @@ class SignUpState extends Equatable {
       formStatus: formStatus ?? this.formStatus,
     );
   }
+
+  static final re = RegExp(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)');
 
   @override
   List<Object?> get props => [email, username, password, formStatus];
