@@ -14,7 +14,7 @@ class SignUpView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SignUpBloc(context.read<AuthRepository>()),
+      create: (context) => SignUpBloc(context.read<AuthRepository>(), context.read<AuthNavigatorCubit>()),
       child: Scaffold(
         appBar: _appBar(),
         body: Padding(
@@ -101,10 +101,12 @@ class SignUpView extends StatelessWidget {
   Widget _submitButton() {
     return BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
-        return ElevatedButton(
-          onPressed: () => context.read<SignUpBloc>().add(const SignUpSubmitted()),
-          child: const Text('Submit'),
-        );
+        return state.formStatus is FormSubmitting
+            ? const CircularProgressIndicator()
+            : ElevatedButton(
+                onPressed: () => context.read<SignUpBloc>().add(const SignUpSubmitted()),
+                child: const Text('Submit'),
+              );
       },
     );
   }

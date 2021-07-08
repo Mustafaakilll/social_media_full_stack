@@ -5,14 +5,16 @@ import 'package:equatable/equatable.dart';
 
 import '../auth_repository.dart';
 import '../form_status.dart';
+import '../navigator/auth_navigator_cubit.dart';
 
 part 'log_in_event.dart';
 part 'log_in_state.dart';
 
 class LogInBloc extends Bloc<LogInEvent, LogInState> {
-  LogInBloc(this.authRepo) : super(const LogInState());
+  LogInBloc(this._authRepo, this._authNavCubit) : super(const LogInState());
 
-  final AuthRepository authRepo;
+  final AuthRepository _authRepo;
+  final AuthNavigatorCubit _authNavCubit;
 
   @override
   Stream<LogInState> mapEventToState(LogInEvent event) async* {
@@ -21,9 +23,11 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
     } else if (event is PasswordChanged) {
       yield state.copyWith(password: event.password);
     } else if (event is LogInSubmitted) {
+      yield state.copyWith(formStatus: const FormSubmitting());
       try {
-        await authRepo.logIn(state.email, state.password);
+        await _authRepo.logIn(state.email, state.password);
         yield state.copyWith(formStatus: const SubmissionSuccess());
+        _authNavCubit.showSession();
       } on Exception catch (e) {
         yield state.copyWith(formStatus: SubmissionFailure(e));
       }

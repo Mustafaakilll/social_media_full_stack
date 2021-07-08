@@ -1,10 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../app_navigation_cubit.dart';
+
 part 'auth_navigator_state.dart';
 
 class AuthNavigatorCubit extends Cubit<AuthNavigatorState> {
-  AuthNavigatorCubit() : super(LogIn());
+  AuthNavigatorCubit(this._appNavCubit) : super(LogIn());
+
+  final AppNavigationCubit _appNavCubit;
 
   void showLogin() {
     emit(LogIn());
@@ -14,5 +18,7 @@ class AuthNavigatorCubit extends Cubit<AuthNavigatorState> {
     emit(SignUp());
   }
 
-  //TODO: GO TO HOME PAGE
+  void showSession() {
+    _appNavCubit.showSession();
+  }
 }

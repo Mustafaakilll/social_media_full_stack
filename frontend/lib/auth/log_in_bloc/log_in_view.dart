@@ -15,7 +15,7 @@ class LogInView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LogInBloc(context.read<AuthRepository>()),
+      create: (context) => LogInBloc(context.read<AuthRepository>(), context.read<AuthNavigatorCubit>()),
       child: Scaffold(
         appBar: _appBar(),
         body: Padding(
@@ -85,10 +85,12 @@ class LogInView extends StatelessWidget {
   Widget _submitButton() {
     return BlocBuilder<LogInBloc, LogInState>(
       builder: (context, state) {
-        return ElevatedButton(
-          onPressed: () => context.read<LogInBloc>().add(LogInSubmitted()),
-          child: const Text('Log In'),
-        );
+        return state.formStatus is FormSubmitting
+            ? const CircularProgressIndicator()
+            : ElevatedButton(
+                onPressed: () => context.read<LogInBloc>().add(LogInSubmitted()),
+                child: const Text('Log In'),
+              );
       },
     );
   }

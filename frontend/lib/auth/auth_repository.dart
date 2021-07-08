@@ -42,4 +42,15 @@ class AuthRepository extends Repository {
       throw Exception(e);
     }
   }
+
+  Future<void> logOut() async {
+    try {
+      await Future.wait([
+        StorageHelper().removeItem('token'),
+        StorageHelper().removeItem('user'),
+      ]);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

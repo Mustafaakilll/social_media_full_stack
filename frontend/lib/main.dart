@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'app_navigation.dart';
 import 'auth/auth_repository.dart';
-import 'auth/navigator/auth_navigator.dart';
+import 'session/post_repository.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,11 +12,14 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => AuthRepository(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(create: (context) => AuthRepository()),
+        RepositoryProvider(create: (context) => PostRepository()),
+      ],
       child: const MaterialApp(
         title: 'Flutter Demo',
-        home: AuthNavigator(),
+        home: AppNavigation(),
       ),
     );
   }

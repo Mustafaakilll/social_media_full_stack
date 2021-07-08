@@ -13,9 +13,9 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
 
   final AuthRepository _authRepo;
 
-  void attemptAutoLogin() {
+  void attemptAutoLogin() async {
     try {
-      final user = _authRepo.attemptAutoLogin();
+      final user = await _authRepo.attemptAutoLogin();
       user != null ? emit(AuthenticatedState(user)) : emit(UnauthenticatedState());
     } on Exception {
       emit(UnauthenticatedState());
@@ -35,5 +35,8 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
     }
   }
 
-  void signOut() {}
+  void logOut() async {
+    await _authRepo.logOut();
+    emit(UnauthenticatedState());
+  }
 }
