@@ -14,6 +14,7 @@ dependencies:
   equatable:
   dio:
   json_annotation:
+  flutter_secure_storage:
 
 
 dev_dependencies:

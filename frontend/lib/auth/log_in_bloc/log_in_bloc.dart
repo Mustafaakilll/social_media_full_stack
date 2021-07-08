@@ -22,8 +22,7 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
       yield state.copyWith(password: event.password);
     } else if (event is LogInSubmitted) {
       try {
-        final token = await authRepo.logIn(state.email, state.password);
-        //TODO: ADD SHARED PREFERENCES FOR STORE TOKEN
+        await authRepo.logIn(state.email, state.password);
         yield state.copyWith(formStatus: const SubmissionSuccess());
       } on Exception catch (e) {
         yield state.copyWith(formStatus: SubmissionFailure(e));

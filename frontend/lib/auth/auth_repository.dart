@@ -1,27 +1,45 @@
 import 'package:dio/dio.dart';
 
-import '../base_repository.dart';
+import '../utils/base_repository.dart';
+import '../utils/storage_helper.dart';
 
 class AuthRepository extends Repository {
-  Future<String> logIn(String email, String password) async {
+  Future<void> logIn(String email, String password) async {
     try {
       final result = await dio.post(
         'https://socialmedia.loca.lt/auth/login',
         data: {'email': email, 'password': password},
       );
-      return result.data['token'];
+      final token = result.data['token'];
+      await StorageHelper().writeData('token', token);
+      final user = await dio.get('https://socialmedia.loca.lt/auth/me',
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      await StorageHelper().writeData('user', user.data['data'].toString());
+    } on DioError catch (e) {
+      throw Exception(e.response!.data['message']);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<void> signUp(String username, String email, String password) async {
+    try {
+      final token = await dio.post('https://socialmedia.loca.lt/auth/signup',
+          data: {'username': username, 'email': email, 'password': password});
+      await StorageHelper().writeData('token', token.data['token']);
+      final user = await dio.get('https://socialmedia.loca.lt/auth/me',
+          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      await StorageHelper().writeData('user', user.data['data'].toString());
     } on DioError catch (e) {
       throw Exception(e.response!.data['message']);
     }
   }
 
-  Future<String> signUp(String username, String email, String password) async {
+  Future<String?>? attemptAutoLogin() async {
     try {
-      final result = await dio.post('https://socialmedia.loca.lt/auth/signup',
-          data: {'username': username, 'email': email, 'password': password});
-      return result.data['token'];
-    } on DioError catch (e) {
-      throw Exception(e.response!.data['message']);
+      return await StorageHelper().getData('user');
+    } catch (e) {
+      throw Exception(e);
     }
   }
 }

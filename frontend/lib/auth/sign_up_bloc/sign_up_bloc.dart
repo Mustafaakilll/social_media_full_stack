@@ -24,8 +24,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       yield state.copyWith(password: event.props.first);
     } else if (event is SignUpSubmitted) {
       try {
-        final token = await authRepo.signUp(state.username, state.email, state.password);
-        //TODO: ADD TOKEN TO LOCAL STORAGE PROBABLY SHARED PREF
+        await authRepo.signUp(state.username, state.email, state.password);
         yield state.copyWith(formStatus: const SubmissionSuccess());
       } on Exception catch (e) {
         yield state.copyWith(formStatus: SubmissionFailure(e));

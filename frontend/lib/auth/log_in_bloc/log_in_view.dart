@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../session/post_repository.dart';
 import '../auth_repository.dart';
 import '../form_status.dart';
 import '../navigator/auth_navigator_cubit.dart';
 import 'log_in_bloc.dart';
 
 class LogInView extends StatelessWidget {
-  LogInView({Key? key}) : super(key: key);
+  LogInView({Key? key}) : super(key: key) {
+    PostRepository().getPosts();
+  }
 
   @override
   Widget build(BuildContext context) {
