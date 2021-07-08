@@ -65,19 +65,20 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.feed = asyncHandler(async (req, res, _) => {
-  const following = req.user.following;
-  const users = await userModel.find().where("_id").in(following).exec();
+    const following = req.user.following;
+
+  const users = await userModel.find()
+    .where("_id")
+    .in(following.concat([req.user.id]))
+    .exec();
 
   const postIds = users.map((user) => user.posts).flat();
-  const posts = await postModel
-    .find()
+
+  const posts = await postModel.find()
     .populate({
-      path: "comments",
+      path: "Comment",
       select: "text",
-      populate: {
-        path: "user",
-        select: "username avatar",
-      },
+      populate: { path: "user", select: "avatar username" },
     })
     .populate({ path: "user", select: "avatar username" })
     .sort("-createdAt")
@@ -99,9 +100,9 @@ exports.feed = asyncHandler(async (req, res, _) => {
     }
 
     post.comments.map((comment) => {
-      comment.isMine = false;
+      comment.isCommentMine = false;
       if (comment.user._id.toString() === req.user.id) {
-        comment.isMine = true;
+        comment.isCommentMine = true;
       }
     });
   });

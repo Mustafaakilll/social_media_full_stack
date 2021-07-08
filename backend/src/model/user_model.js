@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default:
-      "https://res.cloudinary.com/tylerdurden/image/upload/v1602657481/random/pngfind.com-default-image-png-6764065_krremh.png",
+      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png",
   },
   bio: String,
   followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
