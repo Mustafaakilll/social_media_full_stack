@@ -64,6 +64,52 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getUserById = asyncHandler(async (req, res, next) => {
+  const user = await userModel
+    .findOne({ _id: req.params.id })
+    .select("-password")
+    .populate({ path: "posts", select: "files commentsCount likesCount" })
+    .populate({ path: "followers", select: "avatar username" })
+    .populate({ path: "following", select: "avatar username" })
+    .lean()
+    .exec();
+
+  if (!user) {
+    return next({
+      message: `There is no account for this username: ${req.params.username}`,
+      statusCode: 404,
+    });
+  }
+
+  user.isFollowing = false;
+  const followers = user.followers.map((follower) => follower._id.toString());
+
+  user.followers.forEach((follower) => {
+    follower.isFollowing = false;
+    if (req.user.following.includes(follower._id.toString())) {
+      user.isFollowing = true;
+    }
+  });
+
+  user.followers.forEach((user) => {
+    user.isFollowing = false;
+    if (req.user.followers.includes(user._id.toString())) {
+      user.isFollowing = true;
+    }
+  });
+
+  if (followers.includes(req.user.id)) {
+    user.isFollowing = true;
+  }
+
+  user.isMe = req.user.id === user._id.toString();
+
+  res.status(200).json({
+    isSuccess: true,
+    data: user,
+  });
+});
+
 exports.feed = asyncHandler(async (req, res, _) => {
     const following = req.user.following;
 

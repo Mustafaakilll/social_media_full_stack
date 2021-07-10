@@ -1,8 +1,10 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 abstract class _StorageHelper {
-  Object getData(key);
-  void writeData(key, value);
+  Future<void> init();
+  Future<Object> getData(String key, String boxName);
+  Future<void> writeData(String key, Object value, String boxName);
+  Future<void> removeItem(String key, String boxName);
 }
 
 class StorageHelper extends _StorageHelper {
@@ -12,19 +14,31 @@ class StorageHelper extends _StorageHelper {
 
   static final StorageHelper _instance = StorageHelper._init();
 
-  static const _storage = FlutterSecureStorage();
+  final _hive = Hive;
 
   @override
-  Future<void> writeData(key, value) async {
-    await _storage.write(key: key, value: value);
+  Future<void> writeData(String key, Object value, String boxName) async {
+    final box = await _hive.openBox(boxName);
+    await box.put(key, value);
   }
 
   @override
-  Future<String?> getData(key) async {
-    return await _storage.read(key: key);
+  Future<void> init() async {
+    await _hive.initFlutter();
   }
 
-  Future<void> removeItem(String key) async {
-    return await _storage.delete(key: key);
+  @override
+  Future<Object> getData(String key, String boxName) async {
+    final box = await _hive.openBox(boxName);
+    final data = box.get(key);
+    // await box.close();
+    return data;
+  }
+
+  @override
+  Future<void> removeItem(String key, String boxName) async {
+    final box = await _hive.openBox(boxName);
+    await box.delete(key);
+    await box.close();
   }
 }

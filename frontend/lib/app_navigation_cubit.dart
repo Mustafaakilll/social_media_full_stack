@@ -28,7 +28,7 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
 
   void showSession() async {
     try {
-      var user = await StorageHelper().getData('user');
+      var user = await StorageHelper().getData('user', 'auth');
       emit(AuthenticatedState(user));
     } catch (e) {
       emit(UnauthenticatedState());
