@@ -17,7 +17,7 @@ class ResponsePostModel {
   List files;
   List? tags;
   List? likes;
-  int likesCount;
+  int? likesCount;
   List? comments;
-  int commentCount;
+  int? commentCount;
 }

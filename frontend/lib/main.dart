@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'app_navigation.dart';
 import 'auth/auth_repository.dart';
 import 'session/post_repository.dart';
+import 'session/user_repository.dart';
 import 'utils/storage_helper.dart';
 
 Future<void> main() async {
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (context) => AuthRepository()),
+        RepositoryProvider(create: (context) => UserRepository()),
         RepositoryProvider(create: (context) => PostRepository()),
       ],
       child: const MaterialApp(

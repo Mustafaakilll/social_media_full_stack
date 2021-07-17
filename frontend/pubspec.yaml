@@ -15,9 +15,9 @@ dependencies:
   dio:
   json_annotation:
   flutter_secure_storage:
-  hive: ^2.0.4
-  hive_flutter: ^1.1.0
-
+  hive:
+  hive_flutter:
+  image_picker:
 
 dev_dependencies:
   flutter_test:

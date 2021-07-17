@@ -45,7 +45,7 @@ class AuthRepository extends Repository {
 
   Future<Object?>? attemptAutoLogin() async {
     try {
-      return await StorageHelper().getData('user', 'auth');
+      return await StorageHelper().getData('token', 'auth');
     } catch (e) {
       throw Exception(e);
     }
