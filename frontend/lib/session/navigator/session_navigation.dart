@@ -20,7 +20,7 @@ class SessionNavigator extends StatelessWidget {
               Expanded(
                 child: IndexedStack(
                   index: context.read<SessionNavigationCubit>().getIndex(state),
-                  children: [const HomeView(), const AddPostView(), const ProfileView()],
+                  children: [const HomeView(), const AddPostView(), ProfileView()],
                 ),
               ),
               _bottomNavBar(context, state)

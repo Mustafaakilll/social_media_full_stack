@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 
 import '../utils/base_repository.dart';
@@ -26,14 +24,15 @@ class PostRepository extends Repository {
     }
   }
 
-  addPost(String caption, String imageUrl, List<String> tags) async {
+  Future<void> addPost(String caption, String imageUrl, List<String> tags) async {
     try {
       final response = await dio.put('https://socialmedia.loca.lt/posts',
           data: {'tags': tags, 'caption': caption, 'files': imageUrl},
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
-      log(response.data.toString());
+      response.data['data']['isLiked'] = false;
+      response.data['data']['isMine'] = true;
     } catch (e) {
-      throw e;
+      throw Exception(e);
     }
   }
 }

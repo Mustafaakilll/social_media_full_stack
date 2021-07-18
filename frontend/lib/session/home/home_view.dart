@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
 import '../post_repository.dart';
@@ -31,19 +32,31 @@ class HomeView extends StatelessWidget {
 }
 
 class _SuccessBody extends StatelessWidget {
-  const _SuccessBody({Key? key, required this.posts}) : super(key: key);
+  _SuccessBody({Key? key, required this.posts}) : super(key: key);
 
   final List posts;
+  final _refreshController = RefreshController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
-      body: ListView.builder(
-        itemCount: posts.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _postCard(index);
+      body: SmartRefresher(
+        header: const ClassicHeader(),
+        controller: _refreshController,
+        enablePullDown: true,
+        enablePullUp: false,
+        onRefresh: () {
+          context.read<HomeBloc>().add(GetPosts());
+          _refreshController.refreshCompleted();
         },
+        enableTwoLevel: true,
+        child: ListView.builder(
+          itemCount: posts.length,
+          itemBuilder: (BuildContext context, int index) {
+            return _postCard(index);
+          },
+        ),
       ),
     );
   }

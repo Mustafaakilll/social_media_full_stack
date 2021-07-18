@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/session/add_post/add_post_bloc.dart';
-import 'package:frontend/session/post_repository.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../post_repository.dart';
+import 'add_post_bloc.dart';
 
 class AddPostView extends StatelessWidget {
   const AddPostView({Key? key}) : super(key: key);

@@ -19,7 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is GetPosts) {
       try {
-        final postList = await _postRepo.getPosts();
+        final postList = [...await _postRepo.getPosts()];
         yield PostLoadedSuccess(postList);
       } on Exception catch (e) {
         yield PostLoadedFail(e);
