@@ -24,10 +24,19 @@ class PostRepository extends Repository {
     }
   }
 
-  Future<void> addPost(String caption, String imageUrl, List<String> tags) async {
+  Future<void> addPost(String caption, String imageUrl) async {
     try {
+      final tags = <String>[];
+      final _listedCaption = caption.split(' ');
+      final _cleanedCaption = [];
+      for (final tag in _listedCaption) {
+        if (tag.startsWith('#')) tags.add(tag);
+      }
+      for (final cap in _listedCaption) {
+        if (!cap.startsWith('#')) _cleanedCaption.add(cap);
+      }
       final response = await dio.put('https://socialmedia.loca.lt/posts',
-          data: {'tags': tags, 'caption': caption, 'files': imageUrl},
+          data: {'tags': tags, 'caption': _cleanedCaption.join(' '), 'files': imageUrl},
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       response.data['data']['isLiked'] = false;
       response.data['data']['isMine'] = true;

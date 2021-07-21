@@ -3,13 +3,13 @@ part of 'add_post_bloc.dart';
 class AddPostState extends Equatable {
   const AddPostState({
     this.tags = const [],
-    this.imageUrl = '',
+    this.imageUrl,
     this.caption = '',
     this.formStatus = const InitialFormStatus(),
     this.isVisibleSheet = false,
   });
 
-  final String imageUrl;
+  final String? imageUrl;
   final String caption;
   final List<String> tags;
   final FormSubmissionState formStatus;
@@ -32,5 +32,5 @@ class AddPostState extends Equatable {
   }
 
   @override
-  List<Object> get props => [imageUrl, caption, tags, formStatus, isVisibleSheet];
+  List<Object?> get props => [imageUrl, caption, tags, formStatus, isVisibleSheet];
 }

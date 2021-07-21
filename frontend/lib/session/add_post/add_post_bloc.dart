@@ -34,7 +34,8 @@ class AddPostBloc extends Bloc<AddPostEvent, AddPostState> {
     } else if (event is CreatePost) {
       yield state.copyWith(formStatus: const FormSubmitting());
       try {
-        await _postRepo.addPost('state.caption', state.imageUrl, state.tags);
+        await _postRepo.addPost(state.caption, state.imageUrl!);
+        yield state.copyWith(formStatus: const SubmissionSuccess());
       } on Exception catch (e) {
         yield state.copyWith(formStatus: SubmissionFailure(e));
       }
