@@ -18,9 +18,15 @@ class SessionNavigator extends StatelessWidget {
           return Column(
             children: <Widget>[
               Expanded(
-                child: IndexedStack(
-                  index: context.read<SessionNavigationCubit>().getIndex(state),
-                  children: [const HomeView(), const AddPostView(), ProfileView()],
+                child: Navigator(
+                  pages: [
+                    if (state is HomeSession) const MaterialPage(child: HomeView()),
+                    if (state is ProfileSession) MaterialPage(child: ProfileView()),
+                    if (state is AddPostSession) const MaterialPage(child: AddPostView()),
+                  ],
+                  onPopPage: (route, result) => route.didPop(result),
+                  // index: context.read<SessionNavigationCubit>().getIndex(state),
+                  // children: [const HomeView(), const AddPostView(), ProfileView()],
                 ),
               ),
               _bottomNavBar(context, state)

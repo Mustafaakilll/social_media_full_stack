@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:frontend/utils/storage_helper.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../app_navigation_cubit.dart';
 import '../../loading_view.dart';
+import '../../utils/storage_helper.dart';
 import '../user_repository.dart';
 import 'profile_bloc.dart';
 
