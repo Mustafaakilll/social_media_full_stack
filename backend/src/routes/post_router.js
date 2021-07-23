@@ -7,11 +7,13 @@ const {
   deletePost,
   getPost,
   getPosts,
+  toggleLike,
 } = require("./../controller/post_controller");
 
 router.get("/", getPosts);
 router.put("/", protect, addPost);
 router.delete("/:id", protect, deletePost);
 router.get("/:id", protect, getPost);
+router.get("/:id/togglelike", protect, toggleLike);
 
 module.exports = router;
