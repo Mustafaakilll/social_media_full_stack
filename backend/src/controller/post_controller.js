@@ -107,14 +107,14 @@ exports.toggleLike = asyncHandler(async (req, res, next) => {
 		}
 
 		if (post.likes.includes(req.user.id)) {
-			const index = post.likes.indexOf(req.user.id);
+			const index = post.likes.indexOf(req.user);
 			post.likes.splice(index, 1);
 			post.likesCount -= 1
-			await postModel.save();
+			await post.save();
 		} else {
 			post.likes.push(req.user.id);
 			post.likesCount += 1
-			await postModel.save();
+			await post.save();
 		}
 
 		res.json({isSuccess: true, data: {}}).status(200)

@@ -9,4 +9,11 @@ class GetPosts extends HomeEvent {
   List<Object?> get props => [];
 }
 
-//TODO: ADD LIKE AND UNLIKE EVENTS
+class ToggleLike extends HomeEvent {
+  ToggleLike(this.postId);
+
+  final String postId;
+
+  @override
+  List<Object> get props => [postId];
+}

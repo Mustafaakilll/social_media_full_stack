@@ -5,6 +5,8 @@ abstract class HomeState extends Equatable {
 }
 
 class PostLoading extends HomeState {
+  PostLoading();
+
   @override
   List<Object?> get props => [];
 }
@@ -19,6 +21,8 @@ class PostLoadedSuccess extends HomeState {
 }
 
 class NullPosts extends HomeState {
+  NullPosts();
+
   @override
   List<Object?> get props => [];
 }
@@ -30,4 +34,13 @@ class PostLoadedFail extends HomeState {
 
   @override
   List<Object?> get props => [exception];
+}
+
+class PostLikeFailed extends HomeState {
+  PostLikeFailed(this.exception);
+
+  final Exception exception;
+
+  @override
+  List<Object> get props => [exception];
 }

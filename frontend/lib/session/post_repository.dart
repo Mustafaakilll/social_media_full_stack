@@ -44,4 +44,13 @@ class PostRepository extends Repository {
       throw Exception(e);
     }
   }
+
+  Future<void> likePost(final postId) async {
+    try {
+      await dio.get('https://socialmedia.loca.lt/posts/$postId/togglelike',
+          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

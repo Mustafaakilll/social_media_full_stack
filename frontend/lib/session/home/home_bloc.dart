@@ -24,6 +24,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       } on Exception catch (e) {
         yield PostLoadedFail(e);
       }
+    } else if (event is ToggleLike) {
+      try {
+        await _postRepo.likePost(event.postId);
+      } on Exception catch (e) {
+        yield PostLikeFailed(e);
+      }
     }
   }
 }

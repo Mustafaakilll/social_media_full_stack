@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -11,7 +12,6 @@ class HomeView extends StatelessWidget {
 
   //TODO: ADD FETCH IMAGEURL SINGLETON CLASS
   //TODO: ADD COMMENT FEATURE
-  //TODO: COMPLETE ADD POST FEATURE FIRSTLY
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -19,7 +19,7 @@ class HomeView extends StatelessWidget {
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is PostLoadedFail) {
-            return const Center(child: Text('Something went wrong'));
+            return const _ErrorBody();
           } else if (state is PostLoadedSuccess) {
             return _SuccessBody(posts: state.posts);
           } else {
@@ -31,52 +31,124 @@ class HomeView extends StatelessWidget {
   }
 }
 
-class _SuccessBody extends StatelessWidget {
-  _SuccessBody({Key? key, required this.posts}) : super(key: key);
-
-  final List posts;
-  final _refreshController = RefreshController();
+class _ErrorBody extends StatelessWidget {
+  const _ErrorBody({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _appBar(context),
-      body: SmartRefresher(
-        header: const ClassicHeader(),
-        controller: _refreshController,
-        enablePullDown: true,
-        enablePullUp: false,
-        onRefresh: () {
-          context.read<HomeBloc>().add(GetPosts());
-          _refreshController.refreshCompleted();
-        },
-        enableTwoLevel: true,
-        child: ListView.builder(
-          itemCount: posts.length,
-          itemBuilder: (BuildContext context, int index) {
-            return _postCard(index);
-          },
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Something went wrong'),
+            const Text("Why don't you try again"),
+          ],
         ),
       ),
     );
   }
+}
 
-  Card _postCard(int index) {
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _userInfoRow(posts[index]),
-          _postImage(posts[index]['files'].first),
-          posts[index]['isLiked']
-              ? IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_outlined))
-              : IconButton(onPressed: () {}, icon: const Icon(Icons.favorite_outline))
-        ],
+class _SuccessBody extends StatefulWidget {
+  _SuccessBody({Key? key, required this.posts}) : super(key: key);
+
+  final List posts;
+
+  @override
+  __SuccessBodyState createState() => __SuccessBodyState();
+}
+
+class __SuccessBodyState extends State<_SuccessBody> {
+  final _refreshController = RefreshController();
+
+  @override
+  Widget build(BuildContext context) {
+    final _size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: _appBar(context),
+      body: _refreshFeed(context, _size),
+    );
+  }
+
+  Widget _refreshFeed(BuildContext context, Size size) {
+    return SmartRefresher(
+      header: const ClassicHeader(),
+      controller: _refreshController,
+      enablePullDown: true,
+      enablePullUp: false,
+      onRefresh: () {
+        context.read<HomeBloc>().add(GetPosts());
+        _refreshController.refreshCompleted();
+      },
+      enableTwoLevel: true,
+      child: ListView.builder(
+        itemCount: widget.posts.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _postCard(index, size);
+        },
       ),
     );
   }
 
-  Row _userInfoRow(post) {
+  Widget _postCard(int index, Size size) {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        return Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _userInfoRow(widget.posts[index]),
+              _postImage(widget.posts[index]['files'].first),
+              Row(
+                children: [
+                  likeButton(/*widget.posts[index]['isLiked']*/ index, widget.posts[index]['_id']),
+                  const Icon(Icons.message_outlined),
+                ],
+              ),
+              _postCaption(size.width, widget.posts[index]),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _postCaption(double width, final post) {
+    return Row(
+      children: [
+        SizedBox(width: width * .01),
+        Text(post['user']['username'], style: const TextStyle(fontWeight: FontWeight.bold)),
+        SizedBox(width: width * .02),
+        Text(post['caption']),
+      ],
+    );
+  }
+
+  Widget likeButton(int index, String postId) {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        return widget.posts[index]['isLiked']
+            ? IconButton(
+                onPressed: () {
+                  context.read<HomeBloc>().add(ToggleLike(postId));
+                  //TODO: CHANGE SET STATE IF IT IS POSSIBLE
+                  setState(() => widget.posts[index]['isLiked'] = !widget.posts[index]['isLiked']);
+                },
+                icon: const Icon(Icons.favorite_outline),
+                padding: EdgeInsets.zero)
+            : IconButton(
+                onPressed: () {
+                  context.read<HomeBloc>().add(ToggleLike(postId));
+                  setState(() => widget.posts[index]['isLiked'] = !widget.posts[index]['isLiked']);
+                },
+                icon: const Icon(Icons.favorite_outlined),
+                padding: EdgeInsets.zero);
+      },
+    );
+  }
+
+  Widget _userInfoRow(post) {
     return Row(
       children: [
         _avatar(post['user']['avatar']),
@@ -87,11 +159,11 @@ class _SuccessBody extends StatelessWidget {
     );
   }
 
-  CircleAvatar _avatar(String avatarUrl) {
+  Widget _avatar(String avatarUrl) {
     return CircleAvatar(foregroundImage: NetworkImage(avatarUrl), radius: 20);
   }
 
-  AspectRatio _postImage(String imageUrl) {
+  Widget _postImage(String imageUrl) {
     return AspectRatio(
         aspectRatio: 1,
         child: Image.network(
