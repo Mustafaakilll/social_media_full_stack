@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
+import '../../utils/context_extension.dart';
+import '../comment/comment_view.dart';
 import '../post_repository.dart';
 import 'home_bloc.dart';
 
@@ -66,12 +68,12 @@ class __SuccessBodyState extends State<_SuccessBody> {
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: _appBar(context),
-      body: _refreshFeed(context, _size),
+      appBar: _appBar(),
+      body: _refreshFeed(_size),
     );
   }
 
-  Widget _refreshFeed(BuildContext context, Size size) {
+  Widget _refreshFeed(Size size) {
     return SmartRefresher(
       header: const ClassicHeader(),
       controller: _refreshController,
@@ -101,16 +103,20 @@ class __SuccessBodyState extends State<_SuccessBody> {
               _userInfoRow(widget.posts[index]),
               _postImage(widget.posts[index]['files'].first),
               Row(
-                children: [
-                  likeButton(/*widget.posts[index]['isLiked']*/ index, widget.posts[index]['_id']),
-                  const Icon(Icons.message_outlined),
-                ],
+                children: [likeButton(index, widget.posts[index]['_id']), _messageButton()],
               ),
               _postCaption(size.width, widget.posts[index]),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _messageButton() {
+    return GestureDetector(
+      onTap: () => context.navigateToPage(const CommentView()),
+      child: const Icon(Icons.message),
     );
   }
 
@@ -172,7 +178,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
         ));
   }
 
-  AppBar _appBar(BuildContext context) {
+  AppBar _appBar() {
     return AppBar(
       title: const Text('Home View'),
       centerTitle: true,
