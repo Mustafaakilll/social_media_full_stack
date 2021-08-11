@@ -138,7 +138,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
   });
 
   post.comments.push(comment._id);
-  post.commentCount = post.commentCount + 1;
+  post.commentsCount = post.commentCount + 1;
   await post.save();
 
   comment = await comment
