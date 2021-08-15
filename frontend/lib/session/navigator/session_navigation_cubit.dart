@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 part 'session_navigation_state.dart';
 
 class SessionNavigationCubit extends Cubit<SessionNavigationState> {
-  SessionNavigationCubit() : super(HomeSession());
+  SessionNavigationCubit() : super(const HomeSession());
 
   int getIndex(SessionNavigationState state) {
     switch (state.runtimeType) {
@@ -22,16 +22,16 @@ class SessionNavigationCubit extends Cubit<SessionNavigationState> {
   void updateIndex(int index) {
     switch (index) {
       case 0:
-        emit(HomeSession());
+        emit(const HomeSession());
         break;
       case 1:
-        emit(AddPostSession());
+        emit(const AddPostSession());
         break;
       case 2:
-        emit(ProfileSession());
+        emit(const ProfileSession());
         break;
       default:
-        emit(HomeSession());
+        emit(const HomeSession());
     }
   }
 }

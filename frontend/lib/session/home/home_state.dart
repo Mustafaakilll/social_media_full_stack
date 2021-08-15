@@ -44,3 +44,10 @@ class PostLikeFailed extends HomeState {
   @override
   List<Object> get props => [exception];
 }
+
+class PostComment extends HomeState {
+  const PostComment();
+
+  @override
+  List<Object> get props => [];
+}

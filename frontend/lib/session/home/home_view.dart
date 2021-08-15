@@ -4,16 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
-import '../../utils/context_extension.dart';
-import '../comment/comment_view.dart';
 import '../post_repository.dart';
 import 'home_bloc.dart';
+import 'home_navigator/home_navigation_cubit.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
 
   //TODO: ADD FETCH IMAGEURL SINGLETON CLASS
-  //TODO: ADD COMMENT FEATURE
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -103,7 +101,11 @@ class __SuccessBodyState extends State<_SuccessBody> {
               _userInfoRow(widget.posts[index]),
               _postImage(widget.posts[index]['files'].first),
               Row(
-                children: [likeButton(index, widget.posts[index]['_id']), _messageButton()],
+                children: [
+                  likeButton(index, widget.posts[index]['_id']),
+                  _commentButton(
+                      widget.posts[index]['_id'], widget.posts[index]['comments'], widget.posts[index]['user'])
+                ],
               ),
               _postCaption(size.width, widget.posts[index]),
             ],
@@ -113,10 +115,14 @@ class __SuccessBodyState extends State<_SuccessBody> {
     );
   }
 
-  Widget _messageButton() {
-    return GestureDetector(
-      onTap: () => context.navigateToPage(const CommentView()),
-      child: const Icon(Icons.message),
+  Widget _commentButton(String postId, List comments, user) {
+    return BlocBuilder<HomeBloc, HomeState>(
+      builder: (context, state) {
+        return GestureDetector(
+          onTap: () => context.read<HomeNavigationCubit>().showComments(postId, comments, user),
+          child: const Icon(Icons.message),
+        );
+      },
     );
   }
 
@@ -134,7 +140,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
   Widget likeButton(int index, String postId) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        return widget.posts[index]['isLiked']
+        return !widget.posts[index]['isLiked']
             ? IconButton(
                 onPressed: () {
                   context.read<HomeBloc>().add(ToggleLike(postId));
@@ -171,11 +177,12 @@ class __SuccessBodyState extends State<_SuccessBody> {
 
   Widget _postImage(String imageUrl) {
     return AspectRatio(
-        aspectRatio: 1,
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.fill,
-        ));
+      aspectRatio: 1,
+      child: Image.network(
+        imageUrl,
+        fit: BoxFit.fill,
+      ),
+    );
   }
 
   AppBar _appBar() {
