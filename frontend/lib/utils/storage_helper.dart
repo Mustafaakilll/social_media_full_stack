@@ -31,7 +31,7 @@ class StorageHelper extends _StorageHelper {
   Future<Object> getData(String key, String boxName) async {
     final box = await _hive.openBox(boxName);
     final data = box.get(key);
-    // await box.close();
+    await box.close();
     return data;
   }
 

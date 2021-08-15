@@ -9,6 +9,7 @@ part 'app_navigation_state.dart';
 class AppNavigationCubit extends Cubit<AppNavigationState> {
   AppNavigationCubit(this._authRepo) : super(UnknownState()) {
     attemptAutoLogin();
+    // logOut();
   }
 
   final AuthRepository _authRepo;

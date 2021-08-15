@@ -14,7 +14,6 @@ dependencies:
   equatable:
   dio:
   json_annotation:
-  flutter_secure_storage:
   hive:
   hive_flutter:
   image_picker:

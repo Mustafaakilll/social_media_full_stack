@@ -1,10 +1,32 @@
 part of 'comment_bloc.dart';
 
-abstract class CommentState extends Equatable {
-  const CommentState();
-}
+class CommentState extends Equatable {
+  CommentState({
+    this.comments = const [],
+    this.comment = '',
+    this.postId = '',
+    this.formStatus = const InitialFormStatus(),
+  });
 
-class CommentInitial extends CommentState {
+  final List<String> comments;
+  final String comment;
+  final String postId;
+  final FormSubmissionState formStatus;
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [comments, comment, postId, formStatus];
+
+  CommentState copyWith({
+    List<String>? comments,
+    String? comment,
+    String? postId,
+    FormSubmissionState? formStatus,
+  }) {
+    return CommentState(
+      comments: comments ?? this.comments,
+      comment: comment ?? this.comment,
+      postId: postId ?? this.postId,
+      formStatus: formStatus ?? this.formStatus,
+    );
+  }
 }

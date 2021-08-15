@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app_navigation.dart';
 import 'auth/auth_repository.dart';
+import 'session/comment/comment_repository.dart';
 import 'session/post_repository.dart';
 import 'session/user_repository.dart';
 import 'utils/storage_helper.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(create: (context) => AuthRepository()),
         RepositoryProvider(create: (context) => UserRepository()),
         RepositoryProvider(create: (context) => PostRepository()),
+        RepositoryProvider(create: (context) => CommentRepository()),
       ],
       child: const MaterialApp(
         title: 'Flutter Demo',
