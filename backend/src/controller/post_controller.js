@@ -1,3 +1,4 @@
+
 const postModel = require("./../model/post_model");
 const userModel = require("./../model/user_model");
 const commentModel = require("./../model/comment_model");
@@ -137,8 +138,10 @@ exports.addComment = asyncHandler(async (req, res, next) => {
     text: req.body.text,
   });
 
+  console.log(comment)
+
   post.comments.push(comment._id);
-  post.commentsCount = post.commentCount + 1;
+  post.commentsCount = post.commentsCount + 1;
   await post.save();
 
   comment = await comment

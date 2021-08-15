@@ -74,11 +74,11 @@ exports.feed = asyncHandler(async (req, res, _) => {
     .exec();
 
   const postIds = users.map((user) => user.posts).flat();
-
+  
   const posts = await postModel
     .find()
     .populate({
-      path: "Comment",
+      path: "comments",
       select: "text",
       populate: { path: "user", select: "avatar username" },
     })
@@ -88,6 +88,7 @@ exports.feed = asyncHandler(async (req, res, _) => {
     .in(postIds)
     .lean()
     .exec();
+
 
   posts.forEach((post) => {
     post.isLiked = false;
