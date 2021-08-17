@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
+import '../../utils/context_extension.dart';
+import '../comment/comment_view.dart';
 import '../post_repository.dart';
+import '../profile/profile_view.dart';
 import 'home_bloc.dart';
-import 'home_navigator/home_navigation_cubit.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -19,7 +21,7 @@ class HomeView extends StatelessWidget {
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is PostLoadedFail) {
-            return const _ErrorBody();
+            return _ErrorBody(state.exception);
           } else if (state is PostLoadedSuccess) {
             return _SuccessBody(posts: state.posts);
           } else {
@@ -32,7 +34,9 @@ class HomeView extends StatelessWidget {
 }
 
 class _ErrorBody extends StatelessWidget {
-  const _ErrorBody({Key? key}) : super(key: key);
+  const _ErrorBody(this._exception, {Key? key}) : super(key: key);
+
+  final Exception _exception;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,7 @@ class _ErrorBody extends StatelessWidget {
           children: [
             const Text('Something went wrong'),
             const Text("Why don't you try again"),
+            Text(_exception.toString()),
           ],
         ),
       ),
@@ -98,11 +103,11 @@ class __SuccessBodyState extends State<_SuccessBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _userInfoRow(widget.posts[index]),
+              _userInfoRow(widget.posts[index], context),
               _postImage(widget.posts[index]['files'].first),
               Row(
                 children: [
-                  likeButton(index, widget.posts[index]['_id']),
+                  _likeButton(index, widget.posts[index]['_id']),
                   _commentButton(
                       widget.posts[index]['_id'], widget.posts[index]['comments'], widget.posts[index]['user'])
                 ],
@@ -119,7 +124,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return GestureDetector(
-          onTap: () => context.read<HomeNavigationCubit>().showComments(postId, comments, user),
+          onTap: () => context.navigateToPage(CommentView(comments: comments, postId: postId, user: user)),
           child: const Icon(Icons.message),
         );
       },
@@ -137,7 +142,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
     );
   }
 
-  Widget likeButton(int index, String postId) {
+  Widget _likeButton(int index, String postId) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         return !widget.posts[index]['isLiked']
@@ -160,14 +165,15 @@ class __SuccessBodyState extends State<_SuccessBody> {
     );
   }
 
-  Widget _userInfoRow(post) {
-    return Row(
-      children: [
-        _avatar(post['user']['avatar']),
-        Text(post['user']['username']),
-        const Spacer(),
-        if (post['isMine']) IconButton(onPressed: () {}, icon: const Icon(Icons.more))
-      ],
+  Widget _userInfoRow(post, BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.navigateToPage(ProfileView(username: post['user']['username'])),
+      child: Row(
+        children: [
+          _avatar(post['user']['avatar']),
+          Text(post['user']['username']),
+        ],
+      ),
     );
   }
 

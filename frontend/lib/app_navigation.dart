@@ -18,7 +18,7 @@ class AppNavigation extends StatelessWidget {
         builder: (context, state) {
           return Navigator(
             pages: [
-              if (state is AuthenticatedState) const MaterialPage(child: SessionNavigator()),
+              if (state is AuthenticatedState) MaterialPage(child: SessionNavigator()),
               if (state is UnauthenticatedState) const MaterialPage(child: AuthNavigator()),
               if (state is UnknownState) const MaterialPage(child: LoadingView())
             ],

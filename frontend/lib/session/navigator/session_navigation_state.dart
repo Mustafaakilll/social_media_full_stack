@@ -12,7 +12,9 @@ class HomeSession extends SessionNavigationState {
 }
 
 class ProfileSession extends SessionNavigationState {
-  const ProfileSession();
+  const ProfileSession(this.username);
+
+  final String username;
 
   @override
   List<Object?> get props => [];

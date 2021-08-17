@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../home/home_navigator/home_navigation_cubit.dart';
+import '../../utils/context_extension.dart';
 import 'comment_bloc.dart';
 import 'comment_repository.dart';
 
@@ -13,7 +11,7 @@ class CommentView extends StatelessWidget {
 
   final List comments;
   final String postId;
-  final user;
+  final Map user;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +35,7 @@ class CommentView extends StatelessWidget {
 
   AppBar _appBar(BuildContext context) {
     return AppBar(
-      leading: BackButton(color: Colors.green, onPressed: () => context.read<HomeNavigationCubit>().showFeed()),
+      leading: BackButton(color: Colors.green, onPressed: () => context.pop()),
       elevation: 0,
       backgroundColor: Colors.black,
       title: const Text('Comments', style: TextStyle(color: Colors.green)),
@@ -51,7 +49,6 @@ class CommentView extends StatelessWidget {
           child: ListView.builder(
             itemCount: comments.length,
             itemBuilder: (BuildContext context, int index) {
-              log(comments[index].toString());
               return ListTile(
                 leading: CircleAvatar(foregroundImage: NetworkImage(comments[index]['user']['avatar']), radius: 20),
                 subtitle: Text(comments[index]['text']),

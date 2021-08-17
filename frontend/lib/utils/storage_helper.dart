@@ -17,12 +17,6 @@ class StorageHelper extends _StorageHelper {
   final _hive = Hive;
 
   @override
-  Future<void> writeData(String key, Object value, String boxName) async {
-    final box = await _hive.openBox(boxName);
-    await box.put(key, value);
-  }
-
-  @override
   Future<void> init() async {
     await _hive.initFlutter();
   }
@@ -31,8 +25,15 @@ class StorageHelper extends _StorageHelper {
   Future<Object> getData(String key, String boxName) async {
     final box = await _hive.openBox(boxName);
     final data = box.get(key);
-    await box.close();
+    // await box.close();
     return data;
+  }
+
+  @override
+  Future<void> writeData(String key, Object value, String boxName) async {
+    final box = await _hive.openBox(boxName);
+    await box.put(key, value);
+    await box.close();
   }
 
   @override

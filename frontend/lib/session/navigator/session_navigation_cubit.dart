@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../utils/storage_helper.dart';
+
 part 'session_navigation_state.dart';
 
 class SessionNavigationCubit extends Cubit<SessionNavigationState> {
@@ -19,7 +21,7 @@ class SessionNavigationCubit extends Cubit<SessionNavigationState> {
     }
   }
 
-  void updateIndex(int index) {
+  void updateIndex(int index) async {
     switch (index) {
       case 0:
         emit(const HomeSession());
@@ -28,7 +30,8 @@ class SessionNavigationCubit extends Cubit<SessionNavigationState> {
         emit(const AddPostSession());
         break;
       case 2:
-        emit(const ProfileSession());
+        final _user = (await StorageHelper().getData('user', 'auth')) as Map;
+        emit(ProfileSession(_user['username']));
         break;
       default:
         emit(const HomeSession());

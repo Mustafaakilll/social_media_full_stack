@@ -10,7 +10,9 @@ import '../user_repository.dart';
 import 'profile_bloc.dart';
 
 class ProfileView extends StatelessWidget {
-  ProfileView({Key? key}) : super(key: key);
+  ProfileView({Key? key, required this.username}) : super(key: key);
+
+  final String username;
 
   final _refreshController = RefreshController(initialRefresh: false);
 
@@ -43,9 +45,9 @@ class ProfileView extends StatelessWidget {
 }
 
 class _SuccessBody extends StatelessWidget {
-  const _SuccessBody({Key? key, this.user}) : super(key: key);
+  const _SuccessBody({Key? key, required this.user}) : super(key: key);
 
-  final user;
+  final Map user;
 
   @override
   Widget build(BuildContext context) {

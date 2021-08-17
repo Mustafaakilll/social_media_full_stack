@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../utils/storage_helper.dart';
 import '../add_post/add_post_view.dart';
-import '../home/home_navigator/home_navigator.dart';
+import '../home/home_view.dart';
 import '../profile/profile_view.dart';
 import 'session_navigation_cubit.dart';
 
 class SessionNavigator extends StatelessWidget {
-  const SessionNavigator({Key? key}) : super(key: key);
+  SessionNavigator({Key? key}) : super(key: key);
+
+  late String _username;
 
   @override
   Widget build(BuildContext context) {
+    StorageHelper().getData('user', 'auth').then((value) => _username = (value as Map)['username']);
     return BlocProvider(
       create: (context) => SessionNavigationCubit(),
       child: BlocBuilder<SessionNavigationCubit, SessionNavigationState>(
@@ -22,8 +26,8 @@ class SessionNavigator extends StatelessWidget {
                 Expanded(
                   child: Navigator(
                     pages: [
-                      if (state is HomeSession) const MaterialPage(child: HomeNavigator()),
-                      if (state is ProfileSession) MaterialPage(child: ProfileView()),
+                      if (state is HomeSession) const MaterialPage(child: HomeView()),
+                      if (state is ProfileSession) MaterialPage(child: ProfileView(username: _username)),
                       if (state is AddPostSession) const MaterialPage(child: AddPostView()),
                     ],
                     onPopPage: (route, result) => route.didPop(result),
