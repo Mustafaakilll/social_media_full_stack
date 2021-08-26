@@ -7,7 +7,7 @@ class UserRepository extends Repository {
   Future<Map> getUserByUsername(final username) async {
     try {
       final token = await StorageHelper().getData('token', 'auth');
-      final result = await dio.get('https://socialmedia.loca.lt/users/$username',
+      final result = await dio.get('http://192.168.1.107:3000/users/$username',
           options: Options(headers: {'Authorization': 'Bearer $token'}));
       return result.data['data'];
     } catch (e) {

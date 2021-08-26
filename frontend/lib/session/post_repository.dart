@@ -5,7 +5,7 @@ import '../utils/base_repository.dart';
 class PostRepository extends Repository {
   Future<List> getPosts() async {
     try {
-      final response = await dio.get('https://socialmedia.loca.lt/users/feed',
+      final response = await dio.get('http://192.168.1.107:3000/users/feed',
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       return response.data['data'];
     } catch (e) {
@@ -35,7 +35,7 @@ class PostRepository extends Repository {
       for (final cap in _listedCaption) {
         if (!cap.startsWith('#')) _cleanedCaption.add(cap);
       }
-      final response = await dio.put('https://socialmedia.loca.lt/posts',
+      final response = await dio.put('http://192.168.1.107:3000/posts',
           data: {'tags': tags, 'caption': _cleanedCaption.join(' '), 'files': imageUrl},
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       response.data['data']['isLiked'] = false;
@@ -47,7 +47,7 @@ class PostRepository extends Repository {
 
   Future<void> likePost(final postId) async {
     try {
-      await dio.get('https://socialmedia.loca.lt/posts/$postId/togglelike',
+      await dio.get('http://192.168.1.107:3000/posts/$postId/togglelike',
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
     } catch (e) {
       throw Exception(e);
