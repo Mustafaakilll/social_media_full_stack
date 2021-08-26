@@ -12,3 +12,10 @@ extension NavigationExtension on BuildContext {
     return await navigation.push(MaterialPageRoute(builder: (context) => page));
   }
 }
+
+extension SizeExtension on BuildContext {
+  Size get size => MediaQuery.of(this).size;
+
+  double get deviceWidth => size.width;
+  double get deviceHeight => size.height;
+}
