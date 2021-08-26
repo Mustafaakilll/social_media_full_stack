@@ -5,14 +5,14 @@ abstract class HomeState extends Equatable {
 }
 
 class PostLoading extends HomeState {
-  PostLoading();
+  const PostLoading();
 
   @override
   List<Object?> get props => [];
 }
 
 class PostLoadedSuccess extends HomeState {
-  PostLoadedSuccess(this.posts);
+  const PostLoadedSuccess(this.posts);
 
   final List posts;
 
@@ -21,14 +21,14 @@ class PostLoadedSuccess extends HomeState {
 }
 
 class NullPosts extends HomeState {
-  NullPosts();
+  const NullPosts();
 
   @override
   List<Object?> get props => [];
 }
 
 class PostLoadedFail extends HomeState {
-  PostLoadedFail(this.exception);
+  const PostLoadedFail(this.exception);
 
   final Exception exception;
 
@@ -37,7 +37,7 @@ class PostLoadedFail extends HomeState {
 }
 
 class PostLikeFailed extends HomeState {
-  PostLikeFailed(this.exception);
+  const PostLikeFailed(this.exception);
 
   final Exception exception;
 

@@ -9,8 +9,8 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc(this._postRepo) : super(PostLoading()) {
-    add(GetPosts());
+  HomeBloc(this._postRepo) : super(const PostLoading()) {
+    add(const GetPosts());
   }
 
   final PostRepository _postRepo;

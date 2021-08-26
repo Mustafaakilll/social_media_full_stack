@@ -5,12 +5,14 @@ abstract class HomeEvent extends Equatable {
 }
 
 class GetPosts extends HomeEvent {
+  const GetPosts();
+
   @override
   List<Object?> get props => [];
 }
 
 class ToggleLike extends HomeEvent {
-  ToggleLike(this.postId);
+  const ToggleLike(this.postId);
 
   final String postId;
 
