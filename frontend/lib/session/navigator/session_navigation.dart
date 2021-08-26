@@ -10,7 +10,7 @@ import 'session_navigation_cubit.dart';
 class SessionNavigator extends StatelessWidget {
   SessionNavigator({Key? key}) : super(key: key);
 
-  late String _username;
+  late final String _username;
 
   @override
   Widget build(BuildContext context) {
