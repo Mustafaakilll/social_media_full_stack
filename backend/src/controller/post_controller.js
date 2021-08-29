@@ -1,4 +1,3 @@
-
 const postModel = require("./../model/post_model");
 const userModel = require("./../model/user_model");
 const commentModel = require("./../model/comment_model");
@@ -41,11 +40,7 @@ exports.getPost = asyncHandler(async (req, res, next) => {
   post.isLiked = likes.includes(req.user.id);
 
   post.comments.forEach((comment) => {
-    comment.isMine = false;
-
-    if (comment.user._id.toString() === req.user.id) {
-      comment.isMine = true;
-    }
+    comment.isMine = comment.user._id.toString() === req.user.id;
   });
 
   res.status(200).json({
@@ -138,7 +133,7 @@ exports.addComment = asyncHandler(async (req, res, next) => {
     text: req.body.text,
   });
 
-  console.log(comment)
+  console.log(comment);
 
   post.comments.push(comment._id);
   post.commentsCount = post.commentsCount + 1;
@@ -148,5 +143,42 @@ exports.addComment = asyncHandler(async (req, res, next) => {
     .populate({ path: "user", select: "username avatar" })
     .execPopulate();
 
+  res.status(200).json({ isSuccess: true, data: comment });
+});
+
+exports.deleteComment = asyncHandler(async (req, res, next) => {
+  const post = await postModel.findById(req.params.id);
+
+  if (!post) {
+    return next({
+      message: `There is no post for this id: ${req.params.id}`,
+      statusCode: 404,
+    });
+  }
+
+  const comment = commentModel.findOne({
+    _id: req.params.commentId,
+    post: req.params.id,
+  });
+
+  if (!comment) {
+    return next({
+      message: `Comment not found for this id: ${req.params.id}`,
+      statusCode: 404,
+    });
+  }
+
+  if (comment.user.toString() !== req.user.id) {
+    return next({
+      message: `You are not authorized for this action`,
+      statusCode: 401,
+    });
+  }
+
+  const index = post.comments.indexOf(comment._id);
+  post.comments.splice(index, 1);
+  post.commentsCount -= 1;
+  await post.save();
+  await comment.remove();
   res.status(200).json({ isSuccess: true, data: comment });
 });
