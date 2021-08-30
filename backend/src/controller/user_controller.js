@@ -46,10 +46,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   });
 
   user.followers.forEach((user) => {
-    user.isFollowing = false;
-    if (req.user.followers.includes(user._id.toString())) {
-      user.isFollowing = true;
-    }
+    user.isFollowing = req.user.followers.includes(user._id.toString());
   });
 
   if (followers.includes(req.user.id)) {
@@ -74,7 +71,7 @@ exports.feed = asyncHandler(async (req, res, _) => {
     .exec();
 
   const postIds = users.map((user) => user.posts).flat();
-  
+
   const posts = await postModel
     .find()
     .populate({
@@ -89,7 +86,6 @@ exports.feed = asyncHandler(async (req, res, _) => {
     .lean()
     .exec();
 
-
   posts.forEach((post) => {
     post.isLiked = false;
     const likes = post.likes.map((like) => like.toString());
@@ -97,18 +93,82 @@ exports.feed = asyncHandler(async (req, res, _) => {
       post.isLiked = true;
     }
 
-    post.isMine = false;
-    if (post.user._id.toString() === req.user.id) {
-      post.isMine = true;
-    }
+    post.isMine = post.user._id.toString() === req.user.id;
 
     post.comments.map((comment) => {
-      comment.isCommentMine = false;
-      if (comment.user._id.toString() === req.user.id) {
-        comment.isCommentMine = true;
-      }
+      comment.isCommentMine = comment.user._id.toString() === req.user.id;
     });
   });
 
   res.status(200).json({ isSuccess: true, data: posts });
+});
+
+exports.follow = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.params.id);
+
+  if (!user) {
+    return next({
+      message: `There is no account for this id: ${req.params.id}`,
+      statusCode: 404,
+    });
+  }
+
+  if (req.params.id === req.user.id) {
+    return next({ message: "You can't follow yourself", statusCode: 400 });
+  }
+
+  if (user.followers.includes(req.params.id)) {
+    return next({
+      message: "You are already follow this account",
+      statusCode: 400,
+    });
+  }
+
+  await userModel.findByIdAndUpdate(req.params.id, {
+    $push: { followers: req.user.id },
+    $inc: { followersCount: 1 },
+  });
+  await userModel.findByIdAndUpdate(req.user.id, {
+    $push: { following: req.params.id },
+    $inc: { followingCount: 1 },
+  });
+
+  res.status(200).json({ isSuccess: true, data: {} });
+});
+
+exports.unfollow = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.params.id);
+
+  if (!user) {
+    return next({
+      message: `There is no account for this id: ${req.params.id}`,
+      statusCode: 404,
+    });
+  }
+
+  if (req.params.id === req.user.id) {
+    return next({
+      message: "You can't follow/unfollow yourself",
+      statusCode: 400,
+    });
+  }
+
+  if (!user.followers.includes(req.params.id)) {
+    return next({
+      message: "You are already not following this account",
+      statusCode: 400,
+    });
+  }
+
+  await userModel.findByIdAndUpdate(req.params.id, {
+    $pull: { followers: req.params.id },
+    $inc: { followersCount: -1 },
+  });
+
+  await userModel.findByIdAndUpdate(req.user.id, {
+    $pull: { following: req.params.id },
+    $inc: { followingCount: -1 },
+  });
+
+  res.status(200).json({ isSuccess: true, data: {} });
 });
