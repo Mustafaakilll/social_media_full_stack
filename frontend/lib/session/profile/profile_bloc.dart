@@ -3,19 +3,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../utils/storage_helper.dart';
 import '../user_repository.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  ProfileBloc(this._userRepo) : super(ProfileState()) {
-    StorageHelper().getData('user', 'auth').then((value) {
-      value = value as Map;
-      add(FetchUser(value['username']));
-    });
-  }
+  ProfileBloc(this._userRepo) : super(ProfileState());
 
   final UserRepository _userRepo;
 

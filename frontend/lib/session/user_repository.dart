@@ -10,8 +10,8 @@ class UserRepository extends Repository {
       final result = await dio.get('http://192.168.1.107:3000/users/$username',
           options: Options(headers: {'Authorization': 'Bearer $token'}));
       return result.data['data'];
-    } catch (e) {
-      throw Exception(e);
+    } on DioError catch (e) {
+      throw Exception(e.response!.data['message']);
     }
   }
 }

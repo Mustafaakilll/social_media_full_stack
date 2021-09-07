@@ -8,8 +8,8 @@ class PostRepository extends Repository {
       final response = await dio.get('http://192.168.1.107:3000/users/feed',
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       return response.data['data'];
-    } catch (e) {
-      throw Exception(e);
+    } on DioError catch (e) {
+      throw Exception(e.response!.data['message']);
     }
   }
 

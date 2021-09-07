@@ -4,27 +4,31 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../app_navigation_cubit.dart';
 import '../../loading_view.dart';
+import '../../utils/storage_helper.dart';
 import '../user_repository.dart';
 import 'profile_bloc.dart';
 
 class ProfileView extends StatelessWidget {
-  ProfileView({Key? key, required this.username}) : super(key: key);
+  ProfileView({Key? key, this.username}) : super(key: key);
 
-  final String username;
+  late final String? username;
 
   final _refreshController = RefreshController();
 
   @override
   Widget build(BuildContext context) {
+    if (username == null) {
+      StorageHelper().getData('user', 'auth').then((value) => username = (value as Map)['username']);
+    }
     return BlocProvider(
-      create: (context) => ProfileBloc(context.read<UserRepository>()),
+      create: (context) => ProfileBloc(context.read<UserRepository>())..add(FetchUser(username!)),
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           if (state is UserFetchedSuccessful) {
             return SmartRefresher(
                 controller: _refreshController,
                 onRefresh: () async {
-                  context.read<ProfileBloc>().add(FetchUser('apooness1'));
+                  context.read<ProfileBloc>().add(FetchUser(username!));
                   _refreshController.refreshCompleted();
                 },
                 child: _SuccessBody(user: state.user));
@@ -40,19 +44,22 @@ class ProfileView extends StatelessWidget {
 }
 
 class _ErrorBody extends StatelessWidget {
-  const _ErrorBody(this.exception, {Key? key}) : super(key: key);
+  const _ErrorBody(this._exception, {Key? key}) : super(key: key);
 
-  final exception;
+  final Exception _exception;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Instagram User')),
-      body: Column(
-        children: [
-          const Text('Something went wrong why don\'t you try again'),
-          Text('$exception'),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Something went wrong why don\'t you try again'),
+            Text('$_exception'),
+          ],
+        ),
       ),
     );
   }
@@ -78,7 +85,7 @@ class _SuccessBody extends StatelessWidget {
               children: [
                 _userInfo(user),
                 const SizedBox(height: 10),
-                _bio(user['bio'], user['isMe']),
+                _bio(user['bio']),
                 _editFollowButton(user['isMe']),
               ],
             ),
@@ -119,12 +126,8 @@ class _SuccessBody extends StatelessWidget {
     );
   }
 
-  Widget _bio(String bio, bool isMe) {
-    late Widget bioInfo;
-
-    if (bio.isEmpty && isMe) bioInfo = const Text("You didn't update your bio yet");
-    if (bio.isEmpty && !isMe) bioInfo = const Text("This user didn't change his bio yet");
-    return bioInfo;
+  Widget _bio(String bio) {
+    return bio.isNotEmpty ? Text(bio) : Container();
   }
 
   Widget _editFollowButton(bool isMe) {

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../utils/storage_helper.dart';
 import '../add_post/add_post_view.dart';
 import '../home/home_view.dart';
 import '../profile/profile_view.dart';
+import '../search/search_view.dart';
 import 'session_navigation_cubit.dart';
 
 class SessionNavigator extends StatelessWidget {
   SessionNavigator({Key? key}) : super(key: key);
 
-  late final String _username;
+  late final String? username;
 
   @override
   Widget build(BuildContext context) {
-    StorageHelper().getData('user', 'auth').then((value) => _username = (value as Map)['username']);
+    StorageHelper().getData('user', 'auth').then((value) => username = (value as Map)['username']);
     return BlocProvider(
       create: (context) => SessionNavigationCubit(),
       child: BlocBuilder<SessionNavigationCubit, SessionNavigationState>(
@@ -27,8 +29,9 @@ class SessionNavigator extends StatelessWidget {
                   child: Navigator(
                     pages: [
                       if (state is HomeSession) const MaterialPage(child: HomeView()),
-                      if (state is ProfileSession) MaterialPage(child: ProfileView(username: _username)),
+                      if (state is ProfileSession) MaterialPage(child: ProfileView(username: username)),
                       if (state is AddPostSession) const MaterialPage(child: AddPostView()),
+                      if (state is SearchSession) const MaterialPage(child: SearchView()),
                     ],
                     onPopPage: (route, result) => route.didPop(result),
                   ),
@@ -42,15 +45,19 @@ class SessionNavigator extends StatelessWidget {
     );
   }
 
+  //TODO: LOOK HERE CHANGE ICON WHEN ACTIVE
   Widget _bottomNavBar(BuildContext context, SessionNavigationState state) {
     return BottomNavigationBar(
       iconSize: 28,
       currentIndex: context.read<SessionNavigationCubit>().getIndex(state),
       onTap: (value) => context.read<SessionNavigationCubit>().updateIndex(value),
+      showUnselectedLabels: false,
+      type: BottomNavigationBarType.fixed,
       items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Ana sayfa'),
-        const BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Ekle'),
-        const BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profil'),
+        const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+        const BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+        const BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.plusSquare), label: 'Add'),
+        const BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
       ],
     );
   }
