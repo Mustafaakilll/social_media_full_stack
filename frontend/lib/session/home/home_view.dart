@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
@@ -46,9 +47,8 @@ class _ErrorBody extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Something went wrong'),
-            const Text("Why don't you try again"),
-            Text(_exception.toString()),
+            const Text('Something went wrong.Why don\'t you try again'),
+            Text('$_exception'),
           ],
         ),
       ),
@@ -198,7 +198,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
           setState(() {});
         },
         child: state.posts[index]['isLiked']
-            ? const Icon(Icons.favorite_outlined, size: 28)
+            ? const Icon(Icons.favorite_outlined, size: 28, color: Colors.red)
             : const Icon(Icons.favorite_outline, size: 28),
       ),
     );
@@ -206,11 +206,9 @@ class __SuccessBodyState extends State<_SuccessBody> {
 
   Widget _commentButton(String postId, List comments) {
     return GestureDetector(
-      onTap: () => StorageHelper()
-          .getData('user', 'auth')
-          .then((value) => context.navigateToPage(CommentView(comments: comments, postId: postId, user: value as Map))),
-      child: const Icon(Icons.message_outlined, size: 28),
-    );
+        onTap: () => StorageHelper().getData('user', 'auth').then(
+            (value) => context.navigateToPage(CommentView(comments: comments, postId: postId, user: value as Map))),
+        child: const FaIcon(FontAwesomeIcons.comment));
   }
 
   Widget _likeCount(int likeCount) {

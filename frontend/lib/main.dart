@@ -5,6 +5,7 @@ import 'app_navigation.dart';
 import 'auth/auth_repository.dart';
 import 'session/comment/comment_repository.dart';
 import 'session/post_repository.dart';
+import 'session/search/search_repository.dart';
 import 'session/user_repository.dart';
 import 'utils/storage_helper.dart';
 
@@ -18,10 +19,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider(create: (context) => AuthRepository()),
-        RepositoryProvider(create: (context) => UserRepository()),
-        RepositoryProvider(create: (context) => PostRepository()),
-        RepositoryProvider(create: (context) => CommentRepository()),
+        RepositoryProvider(create: (_) => AuthRepository()),
+        RepositoryProvider(create: (_) => SearchRepository()),
+        RepositoryProvider(create: (_) => UserRepository()),
+        RepositoryProvider(create: (_) => PostRepository()),
+        RepositoryProvider(create: (_) => CommentRepository()),
       ],
       child: const MaterialApp(
         title: 'Flutter Demo',

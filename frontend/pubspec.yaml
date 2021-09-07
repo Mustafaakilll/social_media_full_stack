@@ -15,6 +15,7 @@ dependencies:
   dio:
   json_annotation:
   flutter_svg:
+  font_awesome_flutter:
   hive:
   hive_flutter:
   image_picker:
