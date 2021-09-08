@@ -232,9 +232,13 @@ class __SuccessBodyState extends State<_SuccessBody> {
         children: [
           Text(post['user']['username'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           SizedBox(width: context.deviceWidth * .02),
-          Text(
-            post['caption'],
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+          Expanded(
+            child: Text(
+              post['caption'],
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+              softWrap: true,
+            ),
           ),
         ],
       ),

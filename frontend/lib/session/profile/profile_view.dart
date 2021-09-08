@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -65,17 +67,23 @@ class _ErrorBody extends StatelessWidget {
   }
 }
 
-class _SuccessBody extends StatelessWidget {
+class _SuccessBody extends StatefulWidget {
   _SuccessBody({Key? key, required this.user}) : super(key: key);
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Map user;
+
+  @override
+  __SuccessBodyState createState() => __SuccessBodyState();
+}
+
+class __SuccessBodyState extends State<_SuccessBody> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(user['username'], context),
+      appBar: _appBar(widget.user['username'], context),
       body: Column(
         children: <Widget>[
           Padding(
@@ -83,15 +91,15 @@ class _SuccessBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _userInfo(user),
+                _userInfo(),
                 const SizedBox(height: 10),
-                _bio(user['bio']),
-                _editFollowButton(user['isMe']),
+                _bio(widget.user['bio']),
+                _editFollowButton(),
               ],
             ),
           ),
           const Divider(color: Colors.grey, thickness: 5),
-          _postsView(user['posts']),
+          _postsView(widget.user['posts']),
         ],
       ),
     );
@@ -110,19 +118,24 @@ class _SuccessBody extends StatelessWidget {
     return CircleAvatar(radius: 44, foregroundImage: NetworkImage(avatarUrl));
   }
 
-  Widget _userInfo(user) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        _avatarImage(user['avatar']),
-        _spacerWidget(),
-        Column(children: <Widget>[const Text('Posts'), Text('${user['postCount']}')]),
-        _spacerWidget(),
-        Column(children: <Widget>[const Text('Following'), Text('${user['followingCount']}')]),
-        _spacerWidget(),
-        Column(children: <Widget>[const Text('Followers'), Text('${user['followersCount']}')]),
-        _spacerWidget(),
-      ],
+  Widget _userInfo() {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final _state = state as UserFetchedSuccessful;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            _avatarImage(_state.user['avatar']),
+            _spacerWidget(),
+            Column(children: <Widget>[const Text('Posts'), Text('${_state.user['postCount']}')]),
+            _spacerWidget(),
+            Column(children: <Widget>[const Text('Following'), Text('${_state.user['followingCount']}')]),
+            _spacerWidget(),
+            Column(children: <Widget>[const Text('Followers'), Text('${_state.user['followersCount']}')]),
+            _spacerWidget(),
+          ],
+        );
+      },
     );
   }
 
@@ -130,14 +143,40 @@ class _SuccessBody extends StatelessWidget {
     return bio.isNotEmpty ? Text(bio) : Container();
   }
 
-  Widget _editFollowButton(bool isMe) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        if (!isMe) ElevatedButton(onPressed: () {}, child: const Text('Follow')),
-        if (!isMe) ElevatedButton(onPressed: () {}, child: const Text('Message')),
-        if (isMe) ElevatedButton(onPressed: () {}, child: const Text('Edit profile')),
-      ],
+  Widget _editFollowButton() {
+    return BlocBuilder<ProfileBloc, ProfileState>(
+      builder: (context, state) {
+        final _state = state as UserFetchedSuccessful;
+        log(_state.user.toString());
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            if (!_state.user['isMe'] && !_state.user['isFollowing'])
+              ElevatedButton(
+                  onPressed: () {
+                    log(_state.user.toString());
+                    context.read<UserRepository>().follow(_state.user['_id']);
+                    //TODO: LOOK AT HERE
+                    setState(() {
+                      _state.user['followersCount']++;
+                      _state.user['isFollowing'] = true;
+                    });
+                  },
+                  child: Text('Follow')),
+            if (!_state.user['isMe'] && _state.user['isFollowing'])
+              ElevatedButton(
+                  onPressed: () {
+                    context.read<UserRepository>().unfollow(_state.user['_id']);
+                    setState(() {
+                      _state.user['followersCount']--;
+                      _state.user['isFollowing'] = false;
+                    });
+                  },
+                  child: Text('Unfollow')),
+            if (_state.user['isMe']) ElevatedButton(onPressed: () {}, child: const Text('Edit profile'))
+          ],
+        );
+      },
     );
   }
 
