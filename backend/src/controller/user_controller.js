@@ -117,7 +117,7 @@ exports.follow = asyncHandler(async (req, res, next) => {
     return next({message: "You can't follow yourself", statusCode: 400});
   }
 
-  if (user.followers.includes(req.params.id)) {
+  if (user.followers.includes(req.user.id)) {
     return next({
       message: "You are already follow this account",
       statusCode: 400,
@@ -153,15 +153,15 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
     });
   }
 
-  if (!user.followers.includes(req.params.id)) {
-    return next({
-      message: "You are already not following this account",
-      statusCode: 400,
-    });
-  }
+//  if (!user.followers.includes(req.user.id)) {
+//    return next({
+//      message: "You are already not following this account",
+//      statusCode: 400,
+//    });
+//  }
 
   await userModel.findByIdAndUpdate(req.params.id, {
-    $pull: {followers: req.params.id},
+    $pull: {followers: req.user.id},
     $inc: {followersCount: -1},
   });
 
