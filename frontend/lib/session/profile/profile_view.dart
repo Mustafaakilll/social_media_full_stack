@@ -6,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../app_navigation_cubit.dart';
 import '../../loading_view.dart';
+import '../../utils/context_extension.dart';
 import '../../utils/storage_helper.dart';
 import '../user_repository.dart';
 import 'profile_bloc.dart';
@@ -83,7 +84,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: _appBar(widget.user['username'], context),
+      appBar: _appBar(widget.user['username'], context, widget.user['isMe']),
       body: Column(
         children: <Widget>[
           Padding(
@@ -105,11 +106,12 @@ class __SuccessBodyState extends State<_SuccessBody> {
     );
   }
 
-  AppBar _appBar(String username, BuildContext context) {
+  AppBar _appBar(String username, BuildContext context, bool isMe) {
     return AppBar(
       title: Text(username),
       actions: [
-        IconButton(onPressed: () => context.read<AppNavigationCubit>().logOut(), icon: const Icon(Icons.logout)),
+        if (isMe)
+          IconButton(onPressed: () => context.read<AppNavigationCubit>().logOut(), icon: const Icon(Icons.logout)),
       ],
     );
   }
@@ -129,9 +131,13 @@ class __SuccessBodyState extends State<_SuccessBody> {
             _spacerWidget(),
             Column(children: <Widget>[const Text('Posts'), Text('${_state.user['postCount']}')]),
             _spacerWidget(),
-            Column(children: <Widget>[const Text('Following'), Text('${_state.user['followingCount']}')]),
+            GestureDetector(
+                onTap: () => context.navigateToPage(_FollowersView(_state.user['followers'])),
+                child: Column(children: <Widget>[const Text('Followers'), Text('${_state.user['followersCount']}')])),
             _spacerWidget(),
-            Column(children: <Widget>[const Text('Followers'), Text('${_state.user['followersCount']}')]),
+            GestureDetector(
+                onTap: () => context.navigateToPage(_FollowingView(_state.user['following'])),
+                child: Column(children: <Widget>[const Text('Following'), Text('${_state.user['followingCount']}')])),
             _spacerWidget(),
           ],
         );
@@ -147,7 +153,6 @@ class __SuccessBodyState extends State<_SuccessBody> {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
         final _state = state as UserFetchedSuccessful;
-        log(_state.user.toString());
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -156,13 +161,12 @@ class __SuccessBodyState extends State<_SuccessBody> {
                   onPressed: () {
                     log(_state.user.toString());
                     context.read<UserRepository>().follow(_state.user['_id']);
-                    //TODO: LOOK AT HERE
                     setState(() {
                       _state.user['followersCount']++;
                       _state.user['isFollowing'] = true;
                     });
                   },
-                  child: Text('Follow')),
+                  child: const Text('Follow')),
             if (!_state.user['isMe'] && _state.user['isFollowing'])
               ElevatedButton(
                   onPressed: () {
@@ -172,7 +176,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
                       _state.user['isFollowing'] = false;
                     });
                   },
-                  child: Text('Unfollow')),
+                  child: const Text('Unfollow')),
             if (_state.user['isMe']) ElevatedButton(onPressed: () {}, child: const Text('Edit profile'))
           ],
         );
@@ -192,4 +196,58 @@ class __SuccessBodyState extends State<_SuccessBody> {
   }
 
   Spacer _spacerWidget() => const Spacer();
+}
+
+class _FollowersView extends StatelessWidget {
+  const _FollowersView(this._followers, {Key? key}) : super(key: key);
+
+  final List _followers;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AppBar(),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _followers.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () => context.navigateToPage(ProfileView(username: _followers[index]['username'])),
+                title: Text(_followers[index]['username']),
+                leading: CircleAvatar(foregroundImage: NetworkImage(_followers[index]['avatar'])),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FollowingView extends StatelessWidget {
+  const _FollowingView(this._following, {Key? key}) : super(key: key);
+
+  final List _following;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        AppBar(),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _following.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                onTap: () => context.navigateToPage(ProfileView(username: _following[index]['username'])),
+                title: Text(_following[index]['username']),
+                leading: CircleAvatar(foregroundImage: NetworkImage(_following[index]['avatar'])),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 }
