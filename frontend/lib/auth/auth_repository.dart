@@ -34,10 +34,6 @@ class AuthRepository extends Repository {
       await StorageHelper().writeData('token', token.data['token'], 'auth');
 
       await logIn(email, password);
-
-      // final user = await dio.get('http://192.168.1.107:3000/auth/me',
-      //     options: Options(headers: {'Authorization': 'Bearer $token'}));
-      // await StorageHelper().writeData('user', user.data['data'], 'auth');
     } on DioError catch (e) {
       throw Exception(e.response!.data['message']);
     }

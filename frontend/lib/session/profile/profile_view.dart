@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -8,30 +6,32 @@ import '../../app_navigation_cubit.dart';
 import '../../loading_view.dart';
 import '../../utils/context_extension.dart';
 import '../../utils/storage_helper.dart';
+import '../edit_profile/edit_profile_view.dart';
 import '../user_repository.dart';
 import 'profile_bloc.dart';
 
 class ProfileView extends StatelessWidget {
-  ProfileView({Key? key, this.username}) : super(key: key);
+  ProfileView({Key? key, String? username}) : super(key: key) {
+    username == null
+        ? StorageHelper().getData('user', 'auth').then((value) => this.username = (value as Map)['username'])
+        : this.username = username;
+  }
 
-  late final String? username;
+  late final String username;
 
   final _refreshController = RefreshController();
 
   @override
   Widget build(BuildContext context) {
-    if (username == null) {
-      StorageHelper().getData('user', 'auth').then((value) => username = (value as Map)['username']);
-    }
     return BlocProvider(
-      create: (context) => ProfileBloc(context.read<UserRepository>())..add(FetchUser(username!)),
+      create: (context) => ProfileBloc(context.read<UserRepository>())..add(FetchUser(username)),
       child: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           if (state is UserFetchedSuccessful) {
             return SmartRefresher(
                 controller: _refreshController,
                 onRefresh: () async {
-                  context.read<ProfileBloc>().add(FetchUser(username!));
+                  context.read<ProfileBloc>().add(FetchUser(username));
                   _refreshController.refreshCompleted();
                 },
                 child: _SuccessBody(user: state.user));
@@ -78,12 +78,9 @@ class _SuccessBody extends StatefulWidget {
 }
 
 class __SuccessBodyState extends State<_SuccessBody> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
       appBar: _appBar(widget.user['username'], context, widget.user['isMe']),
       body: Column(
         children: <Widget>[
@@ -159,7 +156,6 @@ class __SuccessBodyState extends State<_SuccessBody> {
             if (!_state.user['isMe'] && !_state.user['isFollowing'])
               ElevatedButton(
                   onPressed: () {
-                    log(_state.user.toString());
                     context.read<UserRepository>().follow(_state.user['_id']);
                     setState(() {
                       _state.user['followersCount']++;
@@ -177,7 +173,19 @@ class __SuccessBodyState extends State<_SuccessBody> {
                     });
                   },
                   child: const Text('Unfollow')),
-            if (_state.user['isMe']) ElevatedButton(onPressed: () {}, child: const Text('Edit profile'))
+            if (_state.user['isMe'])
+              ElevatedButton(
+                  onPressed: () async {
+                    //TODO: LOOK HERE AND TRANSLATE IT TO CONTEXT EXTENSION
+                    final newUser = await Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => EditProfileView(_state.user)));
+                    setState(() {
+                      // context.navigateToPage(EditProfileView(_state.user));
+                      _state.user['bio'] = newUser['bio'];
+                      _state.user['avatar'] = newUser['avatar'];
+                    });
+                  },
+                  child: const Text('Edit profile'))
           ],
         );
       },

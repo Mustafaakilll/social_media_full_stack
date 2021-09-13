@@ -32,4 +32,34 @@ class UserRepository extends Repository {
       throw Exception(e);
     }
   }
+
+  Future<List> searchUser(String username) async {
+    try {
+      final response = await dio.get('http://192.168.1.107:3000/users',
+          queryParameters: {'username': username},
+          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      return response.data['data'];
+    } on DioError catch (e) {
+      throw Exception(e.response!.data['message']);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future editUser(Map data) async {
+    try {
+      final response = await dio.put('http://192.168.1.107:3000/users',
+          data: data, options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      // await Future.wait([
+      //   StorageHelper().removeItem('token', 'auth'),
+      //   StorageHelper().removeItem('user', 'auth'),
+      //   StorageHelper().writeData('user', response.data['data'], 'auth'),
+      // ]);
+      return response.data['data'];
+    } on DioError catch (e) {
+      throw Exception(e.response!.data['message']);
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 }

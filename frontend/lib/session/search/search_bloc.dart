@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import 'search_repository.dart';
+import '../user_repository.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
-  SearchBloc(this._searchRepo) : super(const SearchStateEmpty());
+  SearchBloc(this._userRepo) : super(const SearchStateEmpty());
 
-  final SearchRepository _searchRepo;
+  final UserRepository _userRepo;
 
   @override
   Stream<SearchState> mapEventToState(SearchEvent event) async* {
@@ -22,7 +22,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       } else {
         yield const SearchStateLoading();
         try {
-          final results = await _searchRepo.searchUser(username);
+          final results = await _userRepo.searchUser(username);
           yield SearchStateSuccess(results);
         } on Exception catch (e) {
           yield SearchStateError(e);

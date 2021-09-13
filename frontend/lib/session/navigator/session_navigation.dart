@@ -10,13 +10,14 @@ import '../search/search_view.dart';
 import 'session_navigation_cubit.dart';
 
 class SessionNavigator extends StatelessWidget {
-  SessionNavigator({Key? key}) : super(key: key);
+  SessionNavigator({Key? key}) : super(key: key) {
+    StorageHelper().getData('user', 'auth').then((value) => username = (value as Map)['username']);
+  }
 
   late final String? username;
 
   @override
   Widget build(BuildContext context) {
-    StorageHelper().getData('user', 'auth').then((value) => username = (value as Map)['username']);
     return BlocProvider(
       create: (context) => SessionNavigationCubit(),
       child: BlocBuilder<SessionNavigationCubit, SessionNavigationState>(

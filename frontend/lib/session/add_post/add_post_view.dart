@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../auth/form_status.dart';
+import '../../utils/context_extension.dart';
 import '../navigator/session_navigation_cubit.dart';
 import '../post_repository.dart';
 import 'add_post_bloc.dart';
@@ -15,21 +16,20 @@ class AddPostView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return BlocProvider(
       create: (context) => AddPostBloc(context.read<PostRepository>()),
       child: BlocBuilder<AddPostBloc, AddPostState>(
         builder: (context, state) {
           return Scaffold(
             resizeToAvoidBottomInset: false,
-            body: _addPostPage(size),
+            body: _addPostPage(),
           );
         },
       ),
     );
   }
 
-  Widget _addPostPage(Size size) {
+  Widget _addPostPage() {
     return SafeArea(
       child: BlocListener<AddPostBloc, AddPostState>(
         listener: (context, state) {
@@ -47,7 +47,7 @@ class AddPostView extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: <Widget>[
-              _postPhoto(size),
+              _postPhoto(),
               _captionField(),
               _submitButton(),
             ],
@@ -57,7 +57,7 @@ class AddPostView extends StatelessWidget {
     );
   }
 
-  Widget _postPhoto(Size size) {
+  Widget _postPhoto() {
     return BlocBuilder<AddPostBloc, AddPostState>(
       builder: (context, state) {
         return GestureDetector(
@@ -67,7 +67,7 @@ class AddPostView extends StatelessWidget {
             child: Center(
               child: state.imageUrl != null
                   ? Image.network(state.imageUrl!, fit: BoxFit.fill)
-                  : Icon(Icons.add_photo_alternate_rounded, size: size.height * .4),
+                  : Icon(Icons.add_photo_alternate_rounded, size: context.deviceHeight * .4),
             ),
           ),
         );

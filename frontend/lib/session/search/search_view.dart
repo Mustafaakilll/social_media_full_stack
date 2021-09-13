@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../loading_view.dart';
 import '../../utils/context_extension.dart';
 import '../profile/profile_view.dart';
+import '../user_repository.dart';
 import 'search_bloc.dart';
-import 'search_repository.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class SearchView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SearchBloc(context.read<SearchRepository>()),
+      create: (_) => SearchBloc(context.read<UserRepository>()),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),

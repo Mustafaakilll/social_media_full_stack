@@ -2,13 +2,13 @@ part of 'add_post_bloc.dart';
 
 abstract class AddPostEvent extends Equatable {
   const AddPostEvent();
+
+  @override
+  List<Object> get props => [];
 }
 
 class PickImageRequest extends AddPostEvent {
   const PickImageRequest();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class OpenImagePicker extends AddPostEvent {
@@ -20,8 +20,8 @@ class OpenImagePicker extends AddPostEvent {
   List<Object> get props => [imageSource];
 }
 
-class ProvideImagePath extends AddPostEvent {
-  const ProvideImagePath(this.imagePath);
+class AddPostProvideImagePath extends AddPostEvent {
+  const AddPostProvideImagePath(this.imagePath);
 
   final String imagePath;
 
@@ -49,7 +49,4 @@ class TagsChanged extends AddPostEvent {
 
 class CreatePost extends AddPostEvent {
   const CreatePost();
-
-  @override
-  List<Object> get props => [];
 }
