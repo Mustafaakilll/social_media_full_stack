@@ -153,13 +153,6 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
     });
   }
 
-//  if (!user.followers.includes(req.user.id)) {
-//    return next({
-//      message: "You are already not following this account",
-//      statusCode: 400,
-//    });
-//  }
-
   await userModel.findByIdAndUpdate(req.params.id, {
     $pull: {followers: req.user.id},
     $inc: {followersCount: -1},
@@ -192,7 +185,7 @@ exports.editUser = asyncHandler(async (req, res, next) => {
   if (username) fieldsToUpdate.username = username;
   if (email) fieldsToUpdate.email = email;
 
-  const user = userModel.findByIdAndUpdate(
+  const user = await userModel.findByIdAndUpdate(
     req.user.id,
     {
       $set: {...fieldsToUpdate, bio},
