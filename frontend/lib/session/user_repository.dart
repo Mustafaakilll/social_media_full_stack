@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../utils/base_repository.dart';
+import '../utils/storage_helper.dart';
 
 class UserRepository extends Repository {
   Future<Map> getUserByUsername(String username) async {
@@ -50,11 +51,9 @@ class UserRepository extends Repository {
     try {
       final response = await dio.put('http://192.168.1.107:3000/users',
           data: data, options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
-      // await Future.wait([
-      //   StorageHelper().removeItem('token', 'auth'),
-      //   StorageHelper().removeItem('user', 'auth'),
-      //   StorageHelper().writeData('user', response.data['data'], 'auth'),
-      // ]);
+
+      await StorageHelper().removeItem('user', 'auth');
+      await StorageHelper().writeData('user', response.data['data'], 'auth');
       return response.data['data'];
     } on DioError catch (e) {
       throw Exception(e.response!.data['message']);

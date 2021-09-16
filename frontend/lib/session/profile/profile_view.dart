@@ -5,17 +5,12 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../app_navigation_cubit.dart';
 import '../../loading_view.dart';
 import '../../utils/context_extension.dart';
-import '../../utils/storage_helper.dart';
 import '../edit_profile/edit_profile_view.dart';
 import '../user_repository.dart';
 import 'profile_bloc.dart';
 
 class ProfileView extends StatelessWidget {
-  ProfileView({Key? key, String? username}) : super(key: key) {
-    username == null
-        ? StorageHelper().getData('user', 'auth').then((value) => this.username = (value as Map)['username'])
-        : this.username = username;
-  }
+  ProfileView({Key? key, required this.username}) : super(key: key);
 
   late final String username;
 

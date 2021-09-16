@@ -14,7 +14,7 @@ class SessionNavigator extends StatelessWidget {
     StorageHelper().getData('user', 'auth').then((value) => username = (value as Map)['username']);
   }
 
-  late final String? username;
+  late final String username;
 
   @override
   Widget build(BuildContext context) {
