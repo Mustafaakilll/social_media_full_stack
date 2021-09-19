@@ -15,16 +15,16 @@ exports.getUsers = asyncHandler(async (req, res, _) => {
 
   users = users.filter((user) => user._id.toString() !== req.user.id);
 
-  res.status(200).json({isSuccess: true, data: users});
+  res.status(200).json({ isSuccess: true, data: users });
 });
 
 exports.getUser = asyncHandler(async (req, res, next) => {
   const user = await userModel
-    .findOne({username: req.params.username})
+    .findOne({ username: req.params.username })
     .select("-password")
-    .populate({path: "posts", select: "files commentsCount likesCount"})
-    .populate({path: "followers", select: "avatar username"})
-    .populate({path: "following", select: "avatar username"})
+    .populate({ path: "posts", select: "files commentsCount likesCount" })
+    .populate({ path: "followers", select: "avatar username" })
+    .populate({ path: "following", select: "avatar username" })
     .lean()
     .exec();
 
@@ -77,9 +77,9 @@ exports.feed = asyncHandler(async (req, res, _) => {
     .populate({
       path: "comments",
       select: "text",
-      populate: {path: "user", select: "avatar username"},
+      populate: { path: "user", select: "avatar username" },
     })
-    .populate({path: "user", select: "avatar username"})
+    .populate({ path: "user", select: "avatar username" })
     .sort("-createdAt")
     .where("_id")
     .in(postIds)
@@ -100,7 +100,7 @@ exports.feed = asyncHandler(async (req, res, _) => {
     });
   });
 
-  res.status(200).json({isSuccess: true, data: posts});
+  res.status(200).json({ isSuccess: true, data: posts });
 });
 
 exports.follow = asyncHandler(async (req, res, next) => {
@@ -114,7 +114,7 @@ exports.follow = asyncHandler(async (req, res, next) => {
   }
 
   if (req.params.id === req.user.id) {
-    return next({message: "You can't follow yourself", statusCode: 400});
+    return next({ message: "You can't follow yourself", statusCode: 400 });
   }
 
   if (user.followers.includes(req.user.id)) {
@@ -125,15 +125,15 @@ exports.follow = asyncHandler(async (req, res, next) => {
   }
 
   await userModel.findByIdAndUpdate(req.params.id, {
-    $push: {followers: req.user.id},
-    $inc: {followersCount: 1},
+    $push: { followers: req.user.id },
+    $inc: { followersCount: 1 },
   });
   await userModel.findByIdAndUpdate(req.user.id, {
-    $push: {following: req.params.id},
-    $inc: {followingCount: 1},
+    $push: { following: req.params.id },
+    $inc: { followingCount: 1 },
   });
 
-  res.status(200).json({isSuccess: true, data: {}});
+  res.status(200).json({ isSuccess: true, data: {} });
 });
 
 exports.unfollow = asyncHandler(async (req, res, next) => {
@@ -154,47 +154,52 @@ exports.unfollow = asyncHandler(async (req, res, next) => {
   }
 
   await userModel.findByIdAndUpdate(req.params.id, {
-    $pull: {followers: req.user.id},
-    $inc: {followersCount: -1},
+    $pull: { followers: req.user.id },
+    $inc: { followersCount: -1 },
   });
 
   await userModel.findByIdAndUpdate(req.user.id, {
-    $pull: {following: req.params.id},
-    $inc: {followingCount: -1},
+    $pull: { following: req.params.id },
+    $inc: { followingCount: -1 },
   });
 
-  res.status(200).json({isSuccess: true, data: {}});
+  res.status(200).json({ isSuccess: true, data: {} });
 });
 
 exports.searchUser = asyncHandler(async (req, res, next) => {
   if (!req.query.username) {
-    return next({message: "Username can't be null", statusCode: 400});
+    return next({ message: "Username can't be null", statusCode: 400 });
   }
 
   const regex = new RegExp(req.query.username, "i");
-  const user = await userModel.find({username: regex});
+  const user = await userModel.find({ username: regex });
 
-  res.status(200).json({isSuccess: true, data: user});
+  const index = user.findIndex((u) => u.id === req.user.id);
+  user.splice(index, 1);
+
+  res.status(200).json({ isSuccess: true, data: user });
 });
 
-exports.editUser = asyncHandler(async (req, res, next) => {
-  const {avatar, username, bio, email} = req.body;
+exports.editUser = asyncHandler(async (req, res) => {
+  const { avatar, username, bio, email } = req.body;
 
   const fieldsToUpdate = {};
   if (avatar) fieldsToUpdate.avatar = avatar;
   if (username) fieldsToUpdate.username = username;
   if (email) fieldsToUpdate.email = email;
 
-  const user = await userModel.findByIdAndUpdate(
-    req.user.id,
-    {
-      $set: {...fieldsToUpdate, bio},
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  ).select('username avatar email bio');
+  const user = await userModel
+    .findByIdAndUpdate(
+      req.user.id,
+      {
+        $set: { ...fieldsToUpdate, bio },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+    .select("username avatar email bio");
 
-  res.status(200).json({isSuccess: true, data: user})
+  res.status(200).json({ isSuccess: true, data: user });
 });
