@@ -20,50 +20,54 @@ class EditProfileView extends StatelessWidget {
     return BlocProvider(
       create: (context) => EditProfileBloc(context.read<PostRepository>(), context.read<UserRepository>()),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar:
             AppBar(backgroundColor: Colors.transparent, elevation: 0, leading: const BackButton(color: Colors.black)),
         body: BlocBuilder<EditProfileBloc, EditProfileState>(
           builder: (context, state) {
-            return Card(
-              child: Padding(
-                padding: EdgeInsets.all(context.deviceHeight * .04),
-                child: Column(
-                  children: <Widget>[
-                    _UsernameAndAvatar(avatar: user['avatar'], username: user['username']),
-                    SizedBox(height: context.deviceHeight * .04),
-                    _ProfileForm(
-                      initialValue: user['username'],
-                      formTitle: 'Username',
-                      onValueChanged: (value) => context.read<EditProfileBloc>().add(UsernameChanged(username: value)),
-                    ),
-                    SizedBox(height: context.deviceHeight * .02),
-                    _ProfileForm(
-                      initialValue: user['email'],
-                      formTitle: 'Email',
-                      onValueChanged: (value) => context.read<EditProfileBloc>().add(EmailChanged(email: value)),
-                    ),
-                    SizedBox(height: context.deviceHeight * .02),
-                    _ProfileForm(
-                      initialValue: user['bio'],
-                      formTitle: 'Bio',
-                      onValueChanged: (value) => context.read<EditProfileBloc>().add(BioChanged(bio: value)),
-                    ),
-                    SizedBox(height: context.deviceHeight * .02),
-                    ElevatedButton(
-                        onPressed: () {
-                          context.read<EditProfileBloc>().add(
-                                EditProfile({
-                                  'username': user['username'],
-                                  'avatar': user['avatar'],
-                                  'bio': user['bio'],
-                                  'email': user['email']
-                                }),
-                              );
-                          Navigator.of(context)
-                              .pop({'bio': state.bio ?? user['bio'], 'avatar': state.avatar ?? user['avatar']});
-                        },
-                        child: const Text('Submit')),
-                  ],
+            return SingleChildScrollView(
+              child: Card(
+                child: Padding(
+                  padding: EdgeInsets.all(context.deviceHeight * .04),
+                  child: Column(
+                    children: <Widget>[
+                      _UsernameAndAvatar(avatar: user['avatar'], username: user['username']),
+                      SizedBox(height: context.deviceHeight * .04),
+                      _ProfileForm(
+                        initialValue: user['username'],
+                        formTitle: 'Username',
+                        onValueChanged: (value) =>
+                            context.read<EditProfileBloc>().add(UsernameChanged(username: value)),
+                      ),
+                      SizedBox(height: context.deviceHeight * .02),
+                      _ProfileForm(
+                        initialValue: user['email'],
+                        formTitle: 'Email',
+                        onValueChanged: (value) => context.read<EditProfileBloc>().add(EmailChanged(email: value)),
+                      ),
+                      SizedBox(height: context.deviceHeight * .02),
+                      _ProfileForm(
+                        initialValue: user['bio'],
+                        formTitle: 'Bio',
+                        onValueChanged: (value) => context.read<EditProfileBloc>().add(BioChanged(bio: value)),
+                      ),
+                      SizedBox(height: context.deviceHeight * .02),
+                      ElevatedButton(
+                          onPressed: () {
+                            context.read<EditProfileBloc>().add(
+                                  EditProfile({
+                                    'username': user['username'],
+                                    'avatar': user['avatar'],
+                                    'bio': user['bio'],
+                                    'email': user['email']
+                                  }),
+                                );
+                            Navigator.of(context)
+                                .pop({'bio': state.bio ?? user['bio'], 'avatar': state.avatar ?? user['avatar']});
+                          },
+                          child: const Text('Submit')),
+                    ],
+                  ),
                 ),
               ),
             );
