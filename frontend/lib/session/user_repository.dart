@@ -36,7 +36,7 @@ class UserRepository extends Repository {
 
   Future<List> searchUser(String username) async {
     try {
-      final response = await dio.get('http://192.168.1.107:3000/users',
+      final response = await dio.get('http://192.168.1.107:3000/users/search',
           queryParameters: {'username': username},
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       return response.data['data'];

@@ -66,7 +66,10 @@ class _SearchBody extends StatelessWidget {
           return Center(child: Text('Error ${state.exception.toString()}'));
         }
         if (state is SearchStateSuccess) {
-          return state.users.isEmpty ? const Text('There is no account') : _SearchResult(state.users);
+          return _SearchResult(state.users);
+        }
+        if (state is SearchStateEmpty) {
+          return Container();
         }
         return const Center(child: Text('Type to search users'));
       },

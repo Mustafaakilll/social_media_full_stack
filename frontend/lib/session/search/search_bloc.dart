@@ -23,7 +23,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         yield const SearchStateLoading();
         try {
           final results = await _userRepo.searchUser(username);
-          yield SearchStateSuccess(results);
+          yield results.isNotEmpty ? SearchStateSuccess(results) : const SearchStateEmpty();
         } on Exception catch (e) {
           yield SearchStateError(e);
         }
