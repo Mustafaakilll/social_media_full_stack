@@ -10,7 +10,7 @@ exports.getPosts = asyncHandler(async (req, res, _) => {
 });
 
 exports.getPost = asyncHandler(async (req, res, next) => {
-  const post = postModel
+  const post = await postModel
     .findById(req.params.id)
     .populate({
       path: "comments",

@@ -14,8 +14,8 @@ const {
 
 router.get("/", getPosts);
 router.put("/", protect, addPost);
-router.delete("/:id", protect, deletePost);
 router.get("/:id", protect, getPost);
+router.delete("/:id", protect, deletePost);
 router.get("/:id/togglelike", protect, toggleLike);
 router.post("/:id/comments", protect, addComment);
 router.delete("/:id/comments/:commentId", protect, deleteComment);
