@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -5,6 +6,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import '../../app_navigation_cubit.dart';
 import '../../loading_view.dart';
 import '../../utils/context_extension.dart';
+import '../../utils/image_url_cache.dart';
 import '../edit_profile/edit_profile_view.dart';
 import '../user_repository.dart';
 import 'profile_bloc.dart';
@@ -108,8 +110,8 @@ class __SuccessBodyState extends State<_SuccessBody> {
     );
   }
 
-  Widget _avatarImage(avatarUrl) {
-    return CircleAvatar(radius: 44, foregroundImage: NetworkImage(avatarUrl));
+  Widget _avatarImage(String userId) {
+    return CircleAvatar(radius: 44, foregroundImage: CachedNetworkImageProvider(ImageUrlCache().cacheUrl[userId]));
   }
 
   Widget _userInfo() {
@@ -119,7 +121,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            _avatarImage(_state.user['avatar']),
+            _avatarImage(_state.user['_id']),
             _spacerWidget(),
             Column(children: <Widget>[const Text('Posts'), Text('${_state.user['postCount']}')]),
             _spacerWidget(),
@@ -192,7 +194,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
       child: GridView(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 2),
         children: posts.map((e) {
-          return Image.network(e['files'].first, fit: BoxFit.fill);
+          return CachedNetworkImage(imageUrl: e['files'].first, fit: BoxFit.fill);
         }).toList(),
       ),
     );

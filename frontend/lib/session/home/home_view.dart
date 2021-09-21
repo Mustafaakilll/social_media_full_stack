@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +7,7 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
 import '../../utils/context_extension.dart';
+import '../../utils/image_url_cache.dart';
 import '../../utils/storage_helper.dart';
 import '../comment/comment_view.dart';
 import '../post_repository.dart';
@@ -122,7 +124,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
           child: Column(
             children: [
               _userInfoRow(state.posts[index]),
-              _postImage(state.posts[index]['files'].first),
+              _postImage(state.posts[index]['_id']),
               _postActions(index, state.posts[index]['_id'], state.posts[index]['comments']),
               _likeCount(state.posts[index]['likesCount']),
               _postCaption(state.posts[index]),
@@ -159,11 +161,12 @@ class __SuccessBodyState extends State<_SuccessBody> {
     );
   }
 
-  Widget _postImage(String imageUrl) {
+  Widget _postImage(String postId) {
+    final imageUrl = ImageUrlCache().cacheUrl[postId];
     return AspectRatio(
       aspectRatio: 1,
-      child: Image.network(
-        imageUrl,
+      child: CachedNetworkImage(
+        imageUrl: imageUrl,
         fit: BoxFit.fill,
       ),
     );

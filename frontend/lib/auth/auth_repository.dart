@@ -8,14 +8,14 @@ class AuthRepository extends Repository {
     try {
       ///Post Request for user token
       final result =
-          await dio.post('http://192.168.1.107:3000/auth/login', data: {'email': email, 'password': password});
+          await dio.post('http://192.168.1.110:3000/auth/login', data: {'email': email, 'password': password});
       final token = result.data['token'];
 
       ///Add token to database
       await StorageHelper().writeData('token', token, 'auth');
 
       /// Get request for user information
-      final user = await dio.get('http://192.168.1.107:3000/auth/me',
+      final user = await dio.get('http://192.168.1.110:3000/auth/me',
           options: Options(headers: {'Authorization': 'Bearer $token'}));
 
       ///Add User Infos to database
@@ -29,7 +29,7 @@ class AuthRepository extends Repository {
 
   Future<void> signUp(String username, String email, String password) async {
     try {
-      final token = await dio.post('http://192.168.1.107:3000/auth/signup',
+      final token = await dio.post('http://192.168.1.110:3000/auth/signup',
           data: {'username': username, 'email': email, 'password': password});
       await StorageHelper().writeData('token', token.data['token'], 'auth');
 

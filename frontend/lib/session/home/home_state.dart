@@ -2,13 +2,13 @@ part of 'home_bloc.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
+
+  @override
+  List<Object> get props => [];
 }
 
 class PostLoading extends HomeState {
   const PostLoading();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class PostLoadedSuccess extends HomeState {
@@ -17,14 +17,11 @@ class PostLoadedSuccess extends HomeState {
   final List posts;
 
   @override
-  List<Object?> get props => [posts];
+  List<Object> get props => [posts];
 }
 
 class NullPosts extends HomeState {
   const NullPosts();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class PostLoadedFail extends HomeState {
@@ -33,7 +30,7 @@ class PostLoadedFail extends HomeState {
   final Exception exception;
 
   @override
-  List<Object?> get props => [exception];
+  List<Object> get props => [exception];
 }
 
 class PostLikeFailed extends HomeState {
@@ -47,7 +44,4 @@ class PostLikeFailed extends HomeState {
 
 class PostComment extends HomeState {
   const PostComment();
-
-  @override
-  List<Object> get props => [];
 }

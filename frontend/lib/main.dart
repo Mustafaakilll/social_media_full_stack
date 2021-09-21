@@ -9,6 +9,7 @@ import 'session/user_repository.dart';
 import 'utils/storage_helper.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await StorageHelper().init();
   runApp(MyApp());
 }

@@ -20,6 +20,7 @@ dependencies:
   hive_flutter:
   image_picker:
   pull_to_refresh:
+  cached_network_image:
 
 dev_dependencies:
   flutter_test:

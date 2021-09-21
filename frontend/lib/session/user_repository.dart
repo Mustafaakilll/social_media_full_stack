@@ -6,7 +6,7 @@ import '../utils/storage_helper.dart';
 class UserRepository extends Repository {
   Future<Map> getUserByUsername(String username) async {
     try {
-      final result = await dio.get('http://192.168.1.107:3000/users/$username',
+      final result = await dio.get('http://192.168.1.110:3000/users/$username',
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       return result.data['data'];
     } on DioError catch (e) {
@@ -18,7 +18,7 @@ class UserRepository extends Repository {
 
   Future<void> follow(String userId) async {
     try {
-      await dio.get('http://192.168.1.107:3000/users/$userId/follow',
+      await dio.get('http://192.168.1.110:3000/users/$userId/follow',
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
     } catch (e) {
       throw Exception(e);
@@ -27,7 +27,7 @@ class UserRepository extends Repository {
 
   Future<void> unfollow(String userId) async {
     try {
-      await dio.get('http://192.168.1.107:3000/users/$userId/unfollow',
+      await dio.get('http://192.168.1.110:3000/users/$userId/unfollow',
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
     } catch (e) {
       throw Exception(e);
@@ -36,7 +36,7 @@ class UserRepository extends Repository {
 
   Future<List> searchUser(String username) async {
     try {
-      final response = await dio.get('http://192.168.1.107:3000/users/search',
+      final response = await dio.get('http://192.168.1.110:3000/users/search',
           queryParameters: {'username': username},
           options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
       return response.data['data'];
@@ -49,7 +49,7 @@ class UserRepository extends Repository {
 
   Future editUser(Map data) async {
     try {
-      final response = await dio.put('http://192.168.1.107:3000/users',
+      final response = await dio.put('http://192.168.1.110:3000/users',
           data: data, options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
 
       await StorageHelper().removeItem('user', 'auth');
