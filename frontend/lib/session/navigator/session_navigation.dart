@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../utils/storage_helper.dart';
 import '../add_post/add_post_view.dart';
@@ -23,22 +22,7 @@ class SessionNavigator extends StatelessWidget {
       child: BlocBuilder<SessionNavigationCubit, SessionNavigationState>(
         builder: (context, state) {
           return Scaffold(
-            body: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Expanded(
-                  child: Navigator(
-                    pages: [
-                      if (state is HomeSession) const MaterialPage(child: HomeView()),
-                      if (state is ProfileSession) MaterialPage(child: ProfileView(username: username)),
-                      if (state is AddPostSession) const MaterialPage(child: AddPostView()),
-                      if (state is SearchSession) const MaterialPage(child: SearchView()),
-                    ],
-                    onPopPage: (route, result) => route.didPop(result),
-                  ),
-                ),
-              ],
-            ),
+            body: _sessionBody(state),
             bottomNavigationBar: _bottomNavBar(context, state),
           );
         },
@@ -46,7 +30,26 @@ class SessionNavigator extends StatelessWidget {
     );
   }
 
-  //TODO: LOOK HERE CHANGE ICON WHEN ACTIVE
+  Widget _sessionBody(SessionNavigationState state) {
+    return Column(
+      children: <Widget>[
+        Expanded(child: _sessionNavigator(state)),
+      ],
+    );
+  }
+
+  Widget _sessionNavigator(SessionNavigationState state) {
+    return Navigator(
+      pages: [
+        if (state is HomeSession) const MaterialPage(child: HomeView()),
+        if (state is ProfileSession) MaterialPage(child: ProfileView(username: username)),
+        if (state is AddPostSession) const MaterialPage(child: AddPostView()),
+        if (state is SearchSession) const MaterialPage(child: SearchView()),
+      ],
+      onPopPage: (route, result) => route.didPop(result),
+    );
+  }
+
   Widget _bottomNavBar(BuildContext context, SessionNavigationState state) {
     return BottomNavigationBar(
       iconSize: 28,
@@ -55,10 +58,12 @@ class SessionNavigator extends StatelessWidget {
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
       items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home'),
+        const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home', activeIcon: Icon(Icons.home)),
         const BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-        const BottomNavigationBarItem(icon: FaIcon(FontAwesomeIcons.plusSquare), label: 'Add'),
-        const BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.add_box_outlined), label: 'Add', activeIcon: Icon(Icons.add_box)),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline), label: 'Profile', activeIcon: Icon(Icons.person)),
       ],
     );
   }

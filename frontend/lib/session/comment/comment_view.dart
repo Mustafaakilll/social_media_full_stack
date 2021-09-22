@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../utils/context_extension.dart';
+import '../post_repository.dart';
 import 'comment_bloc.dart';
-import 'comment_repository.dart';
 
-//TODO: TRY REMOVE BOTTOM NAV BAR
 class CommentView extends StatelessWidget {
   CommentView({required this.comments, Key? key, required this.postId, required this.user}) : super(key: key);
 
@@ -16,7 +15,7 @@ class CommentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CommentBloc(context.read<CommentRepository>())..add(GetPostId(postId)),
+      create: (_) => CommentBloc(context.read<PostRepository>())..add(GetPostId(postId)),
       child: Scaffold(
         body: _buildPage(context),
         appBar: _appBar(context),

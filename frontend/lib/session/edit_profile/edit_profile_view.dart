@@ -62,8 +62,7 @@ class EditProfileView extends StatelessWidget {
                                     'email': user['email']
                                   }),
                                 );
-                            Navigator.of(context)
-                                .pop({'bio': state.bio ?? user['bio'], 'avatar': state.avatar ?? user['avatar']});
+                            context.pop({'bio': state.bio ?? user['bio'], 'avatar': state.avatar ?? user['avatar']});
                           },
                           child: const Text('Submit')),
                     ],

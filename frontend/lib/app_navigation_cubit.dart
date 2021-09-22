@@ -7,7 +7,7 @@ import 'utils/storage_helper.dart';
 part 'app_navigation_state.dart';
 
 class AppNavigationCubit extends Cubit<AppNavigationState> {
-  AppNavigationCubit(this._authRepo) : super(UnknownState()) {
+  AppNavigationCubit(this._authRepo) : super(const UnknownState()) {
     attemptAutoLogin();
     // logOut();
   }
@@ -17,14 +17,14 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
   void attemptAutoLogin() async {
     try {
       final user = await _authRepo.attemptAutoLogin();
-      user != null ? emit(AuthenticatedState(user)) : emit(UnauthenticatedState());
+      user != null ? emit(AuthenticatedState(user)) : emit(const UnauthenticatedState());
     } on Exception {
-      emit(UnauthenticatedState());
+      emit(const UnauthenticatedState());
     }
   }
 
   void showAuth() {
-    emit(UnauthenticatedState());
+    emit(const UnauthenticatedState());
   }
 
   void showSession() async {
@@ -32,12 +32,12 @@ class AppNavigationCubit extends Cubit<AppNavigationState> {
       var user = await StorageHelper().getData('user', 'auth');
       emit(AuthenticatedState(user));
     } catch (e) {
-      emit(UnauthenticatedState());
+      emit(const UnauthenticatedState());
     }
   }
 
   void logOut() async {
     await _authRepo.logOut();
-    emit(UnauthenticatedState());
+    emit(const UnauthenticatedState());
   }
 }

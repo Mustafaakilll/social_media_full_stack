@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../utils/form_status.dart';
 import '../auth_repository.dart';
-import '../form_status.dart';
 import '../navigator/auth_navigator_cubit.dart';
 
 part 'log_in_event.dart';

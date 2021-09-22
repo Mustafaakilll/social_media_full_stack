@@ -10,7 +10,7 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
-  ProfileBloc(this._userRepo) : super(ProfileState());
+  ProfileBloc(this._userRepo) : super(const ProfileState());
 
   final UserRepository _userRepo;
 

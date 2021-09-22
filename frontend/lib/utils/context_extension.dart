@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 extension NavigationExtension on BuildContext {
-  NavigatorState get navigation => Navigator.of(this);
+  NavigatorState get _navigation => Navigator.of(this);
 
-  Future pop() async {
-    await navigation.maybePop();
+  void pop([dynamic data]) {
+    _navigation.pop(data);
   }
 
   Future navigateToPage(Widget page) async {
-    return await navigation.push(MaterialPageRoute(builder: (context) => page));
+    return await _navigation.push(MaterialPageRoute(builder: (context) => page));
   }
 }
 

@@ -16,16 +16,20 @@ class AppNavigation extends StatelessWidget {
       create: (context) => AppNavigationCubit(context.read<AuthRepository>()),
       child: BlocBuilder<AppNavigationCubit, AppNavigationState>(
         builder: (context, state) {
-          return Navigator(
-            pages: [
-              if (state is AuthenticatedState) MaterialPage(child: SessionNavigator()),
-              if (state is UnauthenticatedState) const MaterialPage(child: AuthNavigator()),
-              if (state is UnknownState) const MaterialPage(child: LoadingView())
-            ],
-            onPopPage: (route, result) => route.didPop(result),
-          );
+          return _appNavigator(state);
         },
       ),
+    );
+  }
+
+  Navigator _appNavigator(AppNavigationState state) {
+    return Navigator(
+      pages: [
+        if (state is AuthenticatedState) MaterialPage(child: SessionNavigator()),
+        if (state is UnauthenticatedState) const MaterialPage(child: AuthNavigator()),
+        if (state is UnknownState) const MaterialPage(child: LoadingView())
+      ],
+      onPopPage: (route, result) => route.didPop(result),
     );
   }
 }

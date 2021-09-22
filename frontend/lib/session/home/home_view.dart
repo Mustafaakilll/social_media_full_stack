@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../../loading_view.dart';
@@ -17,7 +16,6 @@ import 'home_bloc.dart';
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
 
-  //TODO: ADD FETCH IMAGEURL SINGLETON CLASS
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -211,7 +209,7 @@ class __SuccessBodyState extends State<_SuccessBody> {
     return GestureDetector(
         onTap: () => StorageHelper().getData('user', 'auth').then(
             (value) => context.navigateToPage(CommentView(comments: comments, postId: postId, user: value as Map))),
-        child: const FaIcon(FontAwesomeIcons.comment));
+        child: const Icon(Icons.comment));
   }
 
   Widget _likeCount(int likeCount) {

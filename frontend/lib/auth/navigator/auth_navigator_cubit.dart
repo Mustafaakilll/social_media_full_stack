@@ -6,16 +6,16 @@ import '../../app_navigation_cubit.dart';
 part 'auth_navigator_state.dart';
 
 class AuthNavigatorCubit extends Cubit<AuthNavigatorState> {
-  AuthNavigatorCubit(this._appNavCubit) : super(LogIn());
+  AuthNavigatorCubit(this._appNavCubit) : super(const LogIn());
 
   final AppNavigationCubit _appNavCubit;
 
   void showLogin() {
-    emit(LogIn());
+    emit(const LogIn());
   }
 
   void showSignUp() {
-    emit(SignUp());
+    emit(const SignUp());
   }
 
   void showSession() {

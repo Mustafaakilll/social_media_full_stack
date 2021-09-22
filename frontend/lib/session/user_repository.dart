@@ -6,8 +6,7 @@ import '../utils/storage_helper.dart';
 class UserRepository extends Repository {
   Future<Map> getUserByUsername(String username) async {
     try {
-      final result = await dio.get('http://192.168.1.110:3000/users/$username',
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      final result = await dio.get('http://192.168.1.110:3000/users/$username', options: await dioOptions());
       return result.data['data'];
     } on DioError catch (e) {
       throw Exception(e.response!.data['message']);
@@ -18,8 +17,7 @@ class UserRepository extends Repository {
 
   Future<void> follow(String userId) async {
     try {
-      await dio.get('http://192.168.1.110:3000/users/$userId/follow',
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      await dio.get('http://192.168.1.110:3000/users/$userId/follow', options: await dioOptions());
     } catch (e) {
       throw Exception(e);
     }
@@ -27,8 +25,7 @@ class UserRepository extends Repository {
 
   Future<void> unfollow(String userId) async {
     try {
-      await dio.get('http://192.168.1.110:3000/users/$userId/unfollow',
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      await dio.get('http://192.168.1.110:3000/users/$userId/unfollow', options: await dioOptions());
     } catch (e) {
       throw Exception(e);
     }
@@ -37,8 +34,7 @@ class UserRepository extends Repository {
   Future<List> searchUser(String username) async {
     try {
       final response = await dio.get('http://192.168.1.110:3000/users/search',
-          queryParameters: {'username': username},
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+          queryParameters: {'username': username}, options: await dioOptions());
       return response.data['data'];
     } on DioError catch (e) {
       throw Exception(e.response!.data['message']);
@@ -49,8 +45,7 @@ class UserRepository extends Repository {
 
   Future editUser(Map data) async {
     try {
-      final response = await dio.put('http://192.168.1.110:3000/users',
-          data: data, options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      final response = await dio.put('http://192.168.1.110:3000/users', data: data, options: await dioOptions());
 
       await StorageHelper().removeItem('user', 'auth');
       await StorageHelper().writeData('user', response.data['data'], 'auth');

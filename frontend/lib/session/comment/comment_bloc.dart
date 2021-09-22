@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../auth/form_status.dart';
-import 'comment_repository.dart';
+import '../../utils/form_status.dart';
+import '../post_repository.dart';
 
 part 'comment_event.dart';
 part 'comment_state.dart';
 
 class CommentBloc extends Bloc<CommentEvent, CommentState> {
-  CommentBloc(this._commentRepo) : super(CommentState());
+  CommentBloc(this._postRepo) : super(CommentState());
 
-  final CommentRepository _commentRepo;
+  final PostRepository _postRepo;
 
   @override
   Stream<CommentState> mapEventToState(CommentEvent event) async* {
@@ -23,7 +23,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     } else if (event is AddComment) {
       yield state.copyWith(formStatus: const FormSubmitting());
       try {
-        await _commentRepo.addComment(state.postId, state.comment);
+        await _postRepo.addComment(state.postId, state.comment);
         yield state.copyWith(comments: [...state.comments, state.comment]);
         yield state.copyWith(formStatus: const SubmissionSuccess());
       } on Exception catch (e) {

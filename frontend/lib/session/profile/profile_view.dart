@@ -27,7 +27,7 @@ class ProfileView extends StatelessWidget {
           if (state is UserFetchedSuccessful) {
             return SmartRefresher(
                 controller: _refreshController,
-                onRefresh: () async {
+                onRefresh: () {
                   context.read<ProfileBloc>().add(FetchUser(username));
                   _refreshController.refreshCompleted();
                 },
@@ -117,21 +117,20 @@ class __SuccessBodyState extends State<_SuccessBody> {
   Widget _userInfo() {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        final _state = state as UserFetchedSuccessful;
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            _avatarImage(_state.user['_id']),
+            _avatarImage((state as UserFetchedSuccessful).user['_id']),
             _spacerWidget(),
-            Column(children: <Widget>[const Text('Posts'), Text('${_state.user['postCount']}')]),
-            _spacerWidget(),
-            GestureDetector(
-                onTap: () => context.navigateToPage(_FollowersView(_state.user['followers'])),
-                child: Column(children: <Widget>[const Text('Followers'), Text('${_state.user['followersCount']}')])),
+            Column(children: <Widget>[const Text('Posts'), Text('${state.user['postCount']}')]),
             _spacerWidget(),
             GestureDetector(
-                onTap: () => context.navigateToPage(_FollowingView(_state.user['following'])),
-                child: Column(children: <Widget>[const Text('Following'), Text('${_state.user['followingCount']}')])),
+                onTap: () => context.navigateToPage(_FollowersView(state.user['followers'])),
+                child: Column(children: <Widget>[const Text('Followers'), Text('${state.user['followersCount']}')])),
+            _spacerWidget(),
+            GestureDetector(
+                onTap: () => context.navigateToPage(_FollowingView(state.user['following'])),
+                child: Column(children: <Widget>[const Text('Following'), Text('${state.user['followingCount']}')])),
             _spacerWidget(),
           ],
         );
@@ -146,40 +145,36 @@ class __SuccessBodyState extends State<_SuccessBody> {
   Widget _editFollowButton() {
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
-        final _state = state as UserFetchedSuccessful;
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            if (!_state.user['isMe'] && !_state.user['isFollowing'])
+            if (!(state as UserFetchedSuccessful).user['isMe'] && !state.user['isFollowing'])
               ElevatedButton(
                   onPressed: () {
-                    context.read<UserRepository>().follow(_state.user['_id']);
+                    context.read<UserRepository>().follow(state.user['_id']);
                     setState(() {
-                      _state.user['followersCount']++;
-                      _state.user['isFollowing'] = true;
+                      state.user['followersCount']++;
+                      state.user['isFollowing'] = true;
                     });
                   },
                   child: const Text('Follow')),
-            if (!_state.user['isMe'] && _state.user['isFollowing'])
+            if (!state.user['isMe'] && state.user['isFollowing'])
               ElevatedButton(
                   onPressed: () {
-                    context.read<UserRepository>().unfollow(_state.user['_id']);
+                    context.read<UserRepository>().unfollow(state.user['_id']);
                     setState(() {
-                      _state.user['followersCount']--;
-                      _state.user['isFollowing'] = false;
+                      state.user['followersCount']--;
+                      state.user['isFollowing'] = false;
                     });
                   },
                   child: const Text('Unfollow')),
-            if (_state.user['isMe'])
+            if (state.user['isMe'])
               ElevatedButton(
                   onPressed: () async {
-                    //TODO: LOOK HERE AND TRANSLATE IT TO CONTEXT EXTENSION
-                    final newUser = await Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => EditProfileView(_state.user)));
+                    final newUser = await context.navigateToPage(EditProfileView(state.user));
                     setState(() {
-                      // context.navigateToPage(EditProfileView(_state.user));
-                      _state.user['bio'] = newUser['bio'];
-                      _state.user['avatar'] = newUser['avatar'];
+                      state.user['bio'] = newUser['bio'];
+                      state.user['avatar'] = newUser['avatar'];
                     });
                   },
                   child: const Text('Edit profile'))

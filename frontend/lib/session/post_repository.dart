@@ -5,8 +5,7 @@ import '../utils/base_repository.dart';
 class PostRepository extends Repository {
   Future<List> getPosts() async {
     try {
-      final response = await dio.get('http://192.168.1.110:3000/users/feed',
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      final response = await dio.get('http://192.168.1.110:3000/users/feed', options: await dioOptions());
       return response.data['data'];
     } on DioError catch (e) {
       throw Exception(e.response!.data['message']);
@@ -36,8 +35,7 @@ class PostRepository extends Repository {
         if (!cap.startsWith('#')) _cleanedCaption.add(cap);
       }
       final response = await dio.put('http://192.168.1.110:3000/posts',
-          data: {'tags': tags, 'caption': _cleanedCaption.join(' '), 'files': imageUrl},
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+          data: {'tags': tags, 'caption': _cleanedCaption.join(' '), 'files': imageUrl}, options: await dioOptions());
       response.data['data']['isLiked'] = false;
       response.data['data']['isMine'] = true;
     } catch (e) {
@@ -47,8 +45,16 @@ class PostRepository extends Repository {
 
   Future<void> likePost(final postId) async {
     try {
-      await dio.get('http://192.168.1.110:3000/posts/$postId/togglelike',
-          options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
+      await dio.get('http://192.168.1.110:3000/posts/$postId/togglelike', options: await dioOptions());
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future addComment(String postId, String comment) async {
+    try {
+      await dio.post('http://192.168.1.110:3000/posts/$postId/comments',
+          data: {'text': comment}, options: Options(headers: {'Authorization': 'Bearer ${await token}'}));
     } catch (e) {
       throw Exception(e);
     }

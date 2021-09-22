@@ -15,8 +15,7 @@ class AuthRepository extends Repository {
       await StorageHelper().writeData('token', token, 'auth');
 
       /// Get request for user information
-      final user = await dio.get('http://192.168.1.110:3000/auth/me',
-          options: Options(headers: {'Authorization': 'Bearer $token'}));
+      final user = await dio.get('http://192.168.1.110:3000/auth/me', options: await dioOptions());
 
       ///Add User Infos to database
       await StorageHelper().writeData('user', user.data['data'], 'auth');

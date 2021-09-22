@@ -1,12 +1,10 @@
 part of 'profile_bloc.dart';
 
 class ProfileState extends Equatable {
-  ProfileState({this.userInfo = const {}});
-
-  final Map userInfo;
+  const ProfileState();
 
   @override
-  List<Object> get props => [userInfo];
+  List<Object> get props => [];
 }
 
 class UserFetchedSuccessful extends ProfileState {

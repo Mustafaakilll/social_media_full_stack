@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../auth/form_status.dart';
+import '../../utils/form_status.dart';
 import '../post_repository.dart';
 import '../user_repository.dart';
 
