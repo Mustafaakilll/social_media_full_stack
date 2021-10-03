@@ -61,7 +61,7 @@ class SessionNavigator extends StatelessWidget {
         const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), label: 'Home', activeIcon: Icon(Icons.home)),
         const BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
         const BottomNavigationBarItem(
-            icon: Icon(Icons.add_box_outlined), label: 'Add', activeIcon: Icon(Icons.add_box)),
+            icon: Icon(Icons.add_circle_outline), label: 'Add', activeIcon: Icon(Icons.add_circle)),
         const BottomNavigationBarItem(
             icon: Icon(Icons.person_outline), label: 'Profile', activeIcon: Icon(Icons.person)),
       ],

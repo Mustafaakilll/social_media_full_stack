@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'app_navigation.dart';
-import 'auth/auth_repository.dart';
-import 'session/post_repository.dart';
-import 'session/user_repository.dart';
+import 'utils/context_extension.dart';
 import 'utils/storage_helper.dart';
 
 Future<void> main() async {
@@ -17,11 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
-      providers: [
-        RepositoryProvider(create: (_) => AuthRepository()),
-        RepositoryProvider(create: (_) => UserRepository()),
-        RepositoryProvider(create: (_) => PostRepository()),
-      ],
+      providers: [...context.repoProviders],
       child: const MaterialApp(
         title: 'Flutter Demo',
         home: AppNavigation(),
